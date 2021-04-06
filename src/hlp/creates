@@ -1,0 +1,22 @@
+CREATE TABLE user(
+    email TEXT PRIMARY KEY UNIQUE,
+    status BIGINT REFERENCES status (status),
+    first_name TEXT,
+    last_name TEXT,
+    middle_name TEXT,
+    avatar TEXT,
+    birthday DATE,
+    division TEXT,
+    post TEXT
+);
+
+CREATE TABLE status(
+    status BIGINT PRIMARY KEY,
+    status_name TEXT
+);
+
+CREATE TABLE phone_number(
+    number TEXT,
+    email TEXT REFERENCES user (email),
+    PRIMARY KEY(number, email)
+);
