@@ -12,6 +12,7 @@ import ru.magnit.demo.service.UserService;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class MainController {
@@ -50,7 +51,7 @@ public class MainController {
         return phoneNumberService.deletePhone(phoneNumber);
     }
 
-    @PostMapping("/add-phone")
+    @PostMapping("/add-number")
     public void addPhone(@RequestHeader("Authorization") String email, @RequestParam(name="phone") String newPhone){
         PhoneNumber phoneNumber = new PhoneNumber();
         phoneNumber.setNumber(newPhone);
@@ -59,5 +60,14 @@ public class MainController {
         phoneNumberService.addPhone(phoneNumber);
     }
 
+    @GetMapping("/get-numbers")
+    public List<String> getNumbers (@RequestHeader("Authorization") String email){
+        List<String> numbers = new ArrayList<>();
+        for (PhoneNumber p:
+             phoneNumberService.getPhonesByEmail(email)) {
+            numbers.add(p.getNumber());
+        }
+        return numbers;
+    }
 
 }
