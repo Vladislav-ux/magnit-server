@@ -1,5 +1,7 @@
 package ru.magnit.demo.controllers;
 
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.magnit.demo.dto.Response;
@@ -36,11 +38,13 @@ public class MainController {
         Optional<User> user = userService.getUserByEmail(email);
         if(user.isPresent()){
             //Сессия и куки
-//            HttpSession session = request.getSession();
-//            session.setAttribute("email", email);
-//            session.setAttribute("status", user.get().getStatus());
+            HttpSession session = request.getSession();
+            session.setAttribute("email", email);
+            session.setAttribute("status", user.get().getStatus());
             //неактивность до закрытия браузера
-//            session.setMaxInactiveInterval(-1);
+            session.setMaxInactiveInterval(-1);
+
+
             Cookie cookie1 = new Cookie("email", email);
             cookie1.setMaxAge(-1);
             Cookie cookie2 = new Cookie("status", user.get().getStatus().getStatus() + "");
@@ -54,6 +58,41 @@ public class MainController {
         return new Response(ResponseStatus.ERROR, "user does not exist");
     }
 
+    @PostMapping("/user")
+    public User getUserByEmail(@RequestHeader("Authorization") String email){
+        return userService.getUserByEmail(email).get();
+    }
+
+    @PostMapping("/delete_number")
+    public Response deletePhone(@RequestHeader("Authorization") String email, @RequestParam(name="phone") String oldPhone){
+        PhoneNumber phoneNumber = new PhoneNumber();
+        phoneNumber.setNumber(oldPhone);
+        phoneNumber.setUser(new User());
+        phoneNumber.getUser().setEmail(email);
+        return phoneNumberService.deletePhone(phoneNumber);
+    }
+
+    @PostMapping("/add_number")
+    public void addPhone(@RequestHeader("Authorization") String email, @RequestParam(name="phone") String newPhone){
+        PhoneNumber phoneNumber = new PhoneNumber();
+        phoneNumber.setNumber(newPhone);
+        phoneNumber.setUser(new User());
+        phoneNumber.getUser().setEmail(email);
+        phoneNumberService.addPhone(phoneNumber);
+    }
+
+    @GetMapping("/get_numbers")
+    public List<String> getNumbers (@RequestHeader("Authorization") String email){
+        List<String> numbers = new ArrayList<>();
+        for (PhoneNumber p:
+             phoneNumberService.getPhonesByEmail(email)) {
+            numbers.add(p.getNumber());
+        }
+        return numbers;
+    }
+
+
+    //get all users for admin and moderator
     @GetMapping("/users")
     public List<User> getAllUsers(){
         Iterator<User> iter = userService.getAllUsers().iterator();
@@ -65,37 +104,72 @@ public class MainController {
         return users;
     }
 
-    @PostMapping("/user")
-    public User getUserByEmail(@RequestHeader("Authorization") String email){
-        return userService.getUserByEmail(email).get();
+    //////////Modifying methods
+
+    //Delete user
+//    @GetMapping("/delete_user")
+//    public Response deleteUser(@RequestHeader("Authorization") String email){
+//        Optional<User> user = userService.getUserByEmail(email);
+//        if(user.isPresent()) {
+//            return userService.deleteUser(user.get());
+//        }
+//
+//        return new Response(ResponseStatus.ERROR, "no such user was found");
+//    }
+
+    //Add new user
+//    @PostMapping("/add_user")
+//    public Response addNewUser(@RequestBody JSONObject userObject){
+//        User user = new User();
+//        user.setEmail(userObject.getString("email"));
+//        user.setFirst_name(userObject.getString("first_name"));
+//        user.setLast_name(userObject.getString("last_name"));
+//        user.setMiddle_name(userObject.getString("middle_name"));
+//        user.setDivision();
+//
+//
+//    }
+
+    //Modifying first_name
+    @PostMapping("/change_first_name")
+    public Response changeFirstName(@RequestHeader("Authorization") String email, @RequestParam(name="first_name") String firstName){
+         return userService.changeFirstName(email, firstName);
     }
 
-    @PostMapping("/delete-number")
-    public Response deletePhone(@RequestHeader("Authorization") String email, @RequestParam(name="phone") String oldPhone){
-        PhoneNumber phoneNumber = new PhoneNumber();
-        phoneNumber.setNumber(oldPhone);
-        phoneNumber.setUser(new User());
-        phoneNumber.getUser().setEmail(email);
-        return phoneNumberService.deletePhone(phoneNumber);
+    //Modifying last_name
+    @PostMapping("/change_last_name")
+    public Response changeLastName(@RequestHeader("Authorization") String email, @RequestParam(name="last_name") String lastName){
+        return userService.changeLastName(email, lastName);
     }
 
-    @PostMapping("/add-number")
-    public void addPhone(@RequestHeader("Authorization") String email, @RequestParam(name="phone") String newPhone){
-        PhoneNumber phoneNumber = new PhoneNumber();
-        phoneNumber.setNumber(newPhone);
-        phoneNumber.setUser(new User());
-        phoneNumber.getUser().setEmail(email);
-        phoneNumberService.addPhone(phoneNumber);
+    //Modifying middle_name
+    @PostMapping("/change_middle_name")
+    public Response changeMiddleName(@RequestHeader("Authorization") String email, @RequestParam(name="middle_name") String middleName){
+        return userService.changeMiddleName(email, middleName);
     }
 
-    @GetMapping("/get-numbers")
-    public List<String> getNumbers (@RequestHeader("Authorization") String email){
-        List<String> numbers = new ArrayList<>();
-        for (PhoneNumber p:
-             phoneNumberService.getPhonesByEmail(email)) {
-            numbers.add(p.getNumber());
-        }
-        return numbers;
+    //Modifying birthday
+
+    //Modifying post
+    @PostMapping("/change_post")
+    public Response changePostName(@RequestHeader("Authorization") String email, @RequestParam(name="post") String post){
+        return userService.changePost(email, post);
     }
+
+    //Modifying division
+    @PostMapping("/change_division")
+    public Response changeDivisionName(@RequestHeader("Authorization") String email, @RequestParam(name="division") String division){
+        return userService.changeDivision(email, division);
+    }
+
+    //Modifying number
+//    @PostMapping("/change_phone")
+//    public Response changePhone(@RequestHeader("Authorization") String email, @RequestParam String currentPhone){
+//        return userService.changeFirstName(email, currentPhone);
+//    }
+
+
+
+
 
 }

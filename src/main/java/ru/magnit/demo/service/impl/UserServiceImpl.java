@@ -38,5 +38,84 @@ public class UserServiceImpl implements UserService{
         return userRepository.findAll();
     }
 
+    @Override
+    public Response changeFirstName(String email, String newName) {
+        Optional<User> user = userRepository.findById(email);
+        if(user.isPresent()){
+            user.get().setFirst_name(newName);
+            try {
+                userRepository.save(user.get());
+                return new Response(ResponseStatus.SUCCESS, "first name was updated");
+            }catch (Exception e){
+                return new Response(ResponseStatus.ERROR, e.getMessage());
+            }
+        }
+
+        return new Response(ResponseStatus.ERROR, "first name was not updated");
+    }
+
+    @Override
+    public Response changeLastName(String email, String newName) {
+        Optional<User> user = userRepository.findById(email);
+        if(user.isPresent()){
+            user.get().setLast_name(newName);
+            try {
+                userRepository.save(user.get());
+                return new Response(ResponseStatus.SUCCESS, "last name was updated");
+            }catch (Exception e){
+                return new Response(ResponseStatus.ERROR, e.getMessage());
+            }
+        }
+
+        return new Response(ResponseStatus.ERROR, "last name was not updated");
+    }
+
+    @Override
+    public Response changeMiddleName(String email, String newName) {
+        Optional<User> user = userRepository.findById(email);
+        if(user.isPresent()){
+            user.get().setMiddle_name(newName);
+            try {
+                userRepository.save(user.get());
+                return new Response(ResponseStatus.SUCCESS, "middle name was updated");
+            }catch (Exception e){
+                return new Response(ResponseStatus.ERROR, e.getMessage());
+            }
+        }
+
+        return new Response(ResponseStatus.ERROR, "middle name was not updated");
+    }
+
+    @Override
+    public Response changeDivision(String email, String newDivision) {
+        Optional<User> user = userRepository.findById(email);
+        if(user.isPresent()){
+            user.get().setDivision(newDivision);
+            try {
+                userRepository.save(user.get());
+                return new Response(ResponseStatus.SUCCESS, "division was updated");
+            }catch (Exception e){
+                return new Response(ResponseStatus.ERROR, e.getMessage());
+            }
+        }
+
+        return new Response(ResponseStatus.ERROR, "division was not updated");
+    }
+
+    @Override
+    public Response changePost(String email, String newPost) {
+        Optional<User> user = userRepository.findById(email);
+        if(user.isPresent()){
+            user.get().setPost(newPost);
+            try {
+                userRepository.save(user.get());
+                return new Response(ResponseStatus.SUCCESS, "post was updated");
+            }catch (Exception e){
+                return new Response(ResponseStatus.ERROR, e.getMessage());
+            }
+        }
+
+        return new Response(ResponseStatus.ERROR, "post was not updated");
+    }
 
 }
