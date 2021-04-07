@@ -3,12 +3,17 @@ package ru.magnit.demo.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.magnit.demo.dto.Response;
+import ru.magnit.demo.dto.ResponseStatus;
 import ru.magnit.demo.entity.PhoneNumber;
 import ru.magnit.demo.entity.User;
 import ru.magnit.demo.service.PhoneNumberService;
 import ru.magnit.demo.service.StatusService;
 import ru.magnit.demo.service.UserService;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -25,6 +30,29 @@ public class MainController {
 
     @Autowired
     private StatusService statusService;
+
+    @GetMapping("/lk/{email}")
+    public Response authorization(@PathVariable String email, HttpServletRequest request, HttpServletResponse response){
+        Optional<User> user = userService.getUserByEmail(email);
+        if(user.isPresent()){
+            //Сессия и куки
+//            HttpSession session = request.getSession();
+//            session.setAttribute("email", email);
+//            session.setAttribute("status", user.get().getStatus());
+            //неактивность до закрытия браузера
+//            session.setMaxInactiveInterval(-1);
+            Cookie cookie1 = new Cookie("email", email);
+            cookie1.setMaxAge(-1);
+            Cookie cookie2 = new Cookie("status", user.get().getStatus().getStatus() + "");
+            cookie2.setMaxAge(-1);
+
+            response.addCookie(cookie1);
+            response.addCookie(cookie2);
+
+            return new Response(ResponseStatus.SUCCESS, "user exists");
+        }
+        return new Response(ResponseStatus.ERROR, "user does not exist");
+    }
 
     @GetMapping("/users")
     public List<User> getAllUsers(){
