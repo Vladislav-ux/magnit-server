@@ -16,10 +16,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 public class MainController {
@@ -168,8 +165,173 @@ public class MainController {
 //        return userService.changeFirstName(email, currentPhone);
 //    }
 
+    ///////sorting methods
+
+    //sort by first name
+    @GetMapping("/sort_first_name")
+    public List<User> sortByFirstName(){
+        List<User> users = (List<User>) userService.getAllUsers();
+        users.sort(new Comparator<User>() {
+            @Override
+            public int compare(User o1, User o2) {
+                return o1.getFirst_name().compareTo(o2.getFirst_name());
+            }
+        });
+
+        return users;
+    }
+
+    //sort by last name
+    @GetMapping("/sort_last_name")
+    public List<User> sortByLastName(){
+        List<User> users = (List<User>) userService.getAllUsers();
+        users.sort(new Comparator<User>() {
+            @Override
+            public int compare(User o1, User o2) {
+                return o1.getLast_name().compareTo(o2.getLast_name());
+            }
+        });
+
+        return users;
+    }
+
+    //sort by middle name
+    @GetMapping("/sort_middle_name")
+    public List<User> sortByMiddleName(){
+        List<User> users = (List<User>) userService.getAllUsers();
+        users.sort(new Comparator<User>() {
+            @Override
+            public int compare(User o1, User o2) {
+                return o1.getMiddle_name().compareTo(o2.getMiddle_name());
+            }
+        });
+
+        return users;
+    }
+
+    //sort by email
+    @GetMapping("/sort_email")
+    public List<User> sortByEmail(){
+        List<User> users = (List<User>) userService.getAllUsers();
+        users.sort(new Comparator<User>() {
+            @Override
+            public int compare(User o1, User o2) {
+                return o1.getEmail().compareTo(o2.getEmail());
+            }
+        });
+
+        return users;
+    }
+
+    //sort by status
+    @GetMapping("/sort_status")
+    public List<User> sortByStatus(){
+        List<User> users = (List<User>) userService.getAllUsers();
+        users.sort(new Comparator<User>() {
+            @Override
+            public int compare(User o1, User o2) {
+                if(o1.getStatus().getStatus() == o2.getStatus().getStatus()) return 0;
+                else if(o1.getStatus().getStatus() > o2.getStatus().getStatus()) return 1;
+                else return -1;
+            }
+        });
+
+        return users;
+    }
+
+    //sort by division
+    @GetMapping("/sort_division")
+    public List<User> sortByDivision(){
+        List<User> users = (List<User>) userService.getAllUsers();
+        users.sort(new Comparator<User>() {
+            @Override
+            public int compare(User o1, User o2) {
+                return o1.getDivision().compareTo(o2.getDivision());
+            }
+        });
+
+        return users;
+    }
+
+    //sort by post
+    @GetMapping("/sort_post")
+    public List<User> sortByPost(){
+        List<User> users = (List<User>) userService.getAllUsers();
+        users.sort(new Comparator<User>() {
+            @Override
+            public int compare(User o1, User o2) {
+                return o1.getPost().compareTo(o2.getPost());
+            }
+        });
+
+        return users;
+    }
+
+    //sort by birthday
+    @GetMapping("/sort_birthday")
+    public List<User> sortByBirthday(){
+        List<User> users = (List<User>) userService.getAllUsers();
+        users.sort(new Comparator<User>() {
+            @Override
+            public int compare(User o1, User o2) {
+                return 0;
+            }
+        });
+
+        return users;
+    }
 
 
 
+    ///////search methods
+
+    //search by first name
+    @PostMapping("/search_first_name")
+    public List<User> searchByFirstName(@RequestParam String firstName){
+        return userService.searchByFirstName(firstName);
+    }
+
+
+    //search by last name
+    @PostMapping("/search_last_name")
+    public List<User> searchByLastName(@RequestParam String lastName){
+        return userService.searchByLastName(lastName);
+    }
+
+    //search by middle name
+    @PostMapping("/search_middle_name")
+    public List<User> searchByMiddleName(@RequestParam String middleName){
+        return userService.searchByMiddleName(middleName);
+    }
+
+    //search by status
+    @PostMapping("/search_status")
+    public List<User> searchByStatus(@RequestParam String status){
+        return userService.searchByStatus(status);
+    }
+
+    //search by post
+    @PostMapping("/search_post")
+    public List<User> searchByPost(@RequestParam String post){
+        return userService.searchByPost(post);
+    }
+
+    //search by division
+    @PostMapping("/search_division")
+    public List<User> searchByDivision(@RequestParam String division){
+        return userService.searchByDivision(division);
+    }
+
+    //search by email
+    @PostMapping("/search_email")
+    public List<User> searchByEmail(@RequestParam String email){
+        return userService.searchByEmail(email);
+    }
+
+    //search by phone number
+//    @PostMapping("/search_phone")
+//    public List<User> searchByPhoneNumber(@RequestParam String phoneNumber){
+//        return userService.searchByPhoneNumber(phoneNumber);
+//    }
 
 }

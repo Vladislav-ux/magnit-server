@@ -103,6 +103,47 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    public List<User> searchByFirstName(String firstName) {
+        return (List<User>)userRepository.findByFirstName(firstName);
+    }
+
+    @Override
+    public List<User> searchByLastName(String lastName) {
+        return (List<User>)userRepository.findByLastName(lastName);
+    }
+
+    @Override
+    public List<User> searchByMiddleName(String middleName) {
+        return (List<User>)userRepository.findByMiddleName(middleName);
+    }
+
+    @Override
+    public List<User> searchByEmail(String email) {
+        return (List<User>)userRepository.findByEmail(email);
+    }
+
+    @Override
+    public List<User> searchByPost(String post) {
+        return (List<User>)userRepository.findByPost(post);
+
+    }
+
+    @Override
+    public List<User> searchByDivision(String division) {
+        return (List<User>)userRepository.findByDivision(division);
+    }
+
+    @Override
+    public List<User> searchByStatus(String status) {
+        return (List<User>)userRepository.findByStatus(status);
+    }
+
+//    @Override
+//    public List<User> searchByPhoneNumber(String phoneNumber) {
+//        return null;
+//    }
+
+    @Override
     public Response changePost(String email, String newPost) {
         Optional<User> user = userRepository.findById(email);
         if(user.isPresent()){

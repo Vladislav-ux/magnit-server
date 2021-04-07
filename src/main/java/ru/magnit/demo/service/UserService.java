@@ -21,4 +21,14 @@ public interface UserService {
     Response changePost(String email, String post);
     Response changeDivision(String email, String division);
 
+    //search all fields
+    List<User> searchByFirstName(String firstName);
+    List<User> searchByLastName(String lastName);
+    List<User> searchByMiddleName(String middleName);
+    List<User> searchByEmail(String email);
+    List<User> searchByPost(String post);
+    List<User> searchByDivision(String division);
+    List<User> searchByStatus(String status);
+//    List<User> searchByPhoneNumber(String phoneNumber);
+
 }
