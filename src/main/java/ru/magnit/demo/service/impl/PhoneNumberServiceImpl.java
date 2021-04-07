@@ -32,4 +32,9 @@ public class PhoneNumberServiceImpl implements PhoneNumberService {
         phoneNumberRepository.delete(phoneNumber);
         return new Response(ResponseStatus.SUCCESS, "phone has been deleted");
     }
+
+    @Override
+    public void deletePhonesByEmail(String email) {
+        phoneNumberRepository.deletePhonesByEmail(email);
+    }
 }

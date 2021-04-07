@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.magnit.demo.dto.Response;
 import ru.magnit.demo.dto.ResponseStatus;
 import ru.magnit.demo.entity.PhoneNumber;
+import ru.magnit.demo.entity.Status;
 import ru.magnit.demo.entity.User;
 import ru.magnit.demo.service.PhoneNumberService;
 import ru.magnit.demo.service.StatusService;
@@ -31,9 +32,9 @@ public class MainController {
     private StatusService statusService;
 
     @GetMapping("/lk/{email}")
-    public Response authorization(@PathVariable String email, HttpServletRequest request, HttpServletResponse response){
+    public Response authorization(@PathVariable String email, HttpServletRequest request, HttpServletResponse response) {
         Optional<User> user = userService.getUserByEmail(email);
-        if(user.isPresent()){
+        if (user.isPresent()) {
             //Сессия и куки
             HttpSession session = request.getSession();
             session.setAttribute("email", email);
@@ -56,12 +57,12 @@ public class MainController {
     }
 
     @PostMapping("/user")
-    public User getUserByEmail(@RequestHeader("Authorization") String email){
-        return userService.getUserByEmail(email).get();
+    public Optional<User> getUserByEmail(@RequestHeader("Authorization") String email) {
+        return userService.getUserByEmail(email);
     }
 
     @PostMapping("/delete_number")
-    public Response deletePhone(@RequestHeader("Authorization") String email, @RequestParam(name="phone") String oldPhone){
+    public Response deletePhone(@RequestHeader("Authorization") String email, @RequestParam(name = "phone") String oldPhone) {
         PhoneNumber phoneNumber = new PhoneNumber();
         phoneNumber.setNumber(oldPhone);
         phoneNumber.setUser(new User());
@@ -70,7 +71,7 @@ public class MainController {
     }
 
     @PostMapping("/add_number")
-    public void addPhone(@RequestHeader("Authorization") String email, @RequestParam(name="phone") String newPhone){
+    public void addPhone(@RequestHeader("Authorization") String email, @RequestParam(name = "phone") String newPhone) {
         PhoneNumber phoneNumber = new PhoneNumber();
         phoneNumber.setNumber(newPhone);
         phoneNumber.setUser(new User());
@@ -79,10 +80,10 @@ public class MainController {
     }
 
     @GetMapping("/get_numbers")
-    public List<String> getNumbers (@RequestHeader("Authorization") String email){
+    public List<String> getNumbers(@RequestHeader("Authorization") String email) {
         List<String> numbers = new ArrayList<>();
-        for (PhoneNumber p:
-             phoneNumberService.getPhonesByEmail(email)) {
+        for (PhoneNumber p :
+                phoneNumberService.getPhonesByEmail(email)) {
             numbers.add(p.getNumber());
         }
         return numbers;
@@ -91,10 +92,10 @@ public class MainController {
 
     //get all users for admin and moderator
     @GetMapping("/users")
-    public List<User> getAllUsers(){
+    public List<User> getAllUsers() {
         Iterator<User> iter = userService.getAllUsers().iterator();
         List<User> users = new ArrayList<>();
-        while(iter.hasNext()){
+        while (iter.hasNext()) {
             users.add(iter.next());
         }
 
@@ -104,44 +105,45 @@ public class MainController {
     //////////Modifying methods
 
     //Delete user
-//    @GetMapping("/delete_user")
-//    public Response deleteUser(@RequestHeader("Authorization") String email){
-//        Optional<User> user = userService.getUserByEmail(email);
-//        if(user.isPresent()) {
-//            return userService.deleteUser(user.get());
-//        }
-//
-//        return new Response(ResponseStatus.ERROR, "no such user was found");
-//    }
+    @GetMapping("/delete_user")
+    public Response deleteUser(@RequestHeader("Authorization") String email) {
+        Optional<User> user = userService.getUserByEmail(email);
+        if (user.isPresent()) {
+            return userService.deleteUserByEmail(email);
+        }
+
+        return new Response(ResponseStatus.ERROR, "no such user was found");
+    }
 
     //Add new user
-//    @PostMapping("/add_user")
-//    public Response addNewUser(@RequestBody JSONObject userObject){
-//        User user = new User();
-//        user.setEmail(userObject.getString("email"));
-//        user.setFirst_name(userObject.getString("first_name"));
-//        user.setLast_name(userObject.getString("last_name"));
-//        user.setMiddle_name(userObject.getString("middle_name"));
-//        user.setDivision();
-//
-//
-//    }
+    @PostMapping("/add_user")
+    //Почему-то не рабоатет с json
+    public Response addNewUser(@RequestBody User user) {
+        if (userService.getUserByEmail(user.getEmail()).isPresent()) {
+            return new Response(ResponseStatus.ERROR, "user is already exist");
+        }
+        User u = userService.addUser(user);
+        if (u != null) {
+            return new Response(ResponseStatus.SUCCESS, "user added");
+        }
+        return new Response(ResponseStatus.ERROR, "user did not add");
+    }
 
     //Modifying first_name
     @PostMapping("/change_first_name")
-    public Response changeFirstName(@RequestHeader("Authorization") String email, @RequestParam(name="first_name") String firstName){
-         return userService.changeFirstName(email, firstName);
+    public Response changeFirstName(@RequestHeader("Authorization") String email, @RequestParam(name = "first_name") String firstName) {
+        return userService.changeFirstName(email, firstName);
     }
 
     //Modifying last_name
     @PostMapping("/change_last_name")
-    public Response changeLastName(@RequestHeader("Authorization") String email, @RequestParam(name="last_name") String lastName){
+    public Response changeLastName(@RequestHeader("Authorization") String email, @RequestParam(name = "last_name") String lastName) {
         return userService.changeLastName(email, lastName);
     }
 
     //Modifying middle_name
     @PostMapping("/change_middle_name")
-    public Response changeMiddleName(@RequestHeader("Authorization") String email, @RequestParam(name="middle_name") String middleName){
+    public Response changeMiddleName(@RequestHeader("Authorization") String email, @RequestParam(name = "middle_name") String middleName) {
         return userService.changeMiddleName(email, middleName);
     }
 
@@ -149,13 +151,13 @@ public class MainController {
 
     //Modifying post
     @PostMapping("/change_post")
-    public Response changePostName(@RequestHeader("Authorization") String email, @RequestParam(name="post") String post){
+    public Response changePostName(@RequestHeader("Authorization") String email, @RequestParam(name = "post") String post) {
         return userService.changePost(email, post);
     }
 
     //Modifying division
     @PostMapping("/change_division")
-    public Response changeDivisionName(@RequestHeader("Authorization") String email, @RequestParam(name="division") String division){
+    public Response changeDivisionName(@RequestHeader("Authorization") String email, @RequestParam(name = "division") String division) {
         return userService.changeDivision(email, division);
     }
 
@@ -169,7 +171,7 @@ public class MainController {
 
     //sort by first name
     @GetMapping("/sort_first_name")
-    public List<User> sortByFirstName(){
+    public List<User> sortByFirstName() {
         List<User> users = (List<User>) userService.getAllUsers();
         users.sort(new Comparator<User>() {
             @Override
@@ -183,7 +185,7 @@ public class MainController {
 
     //sort by last name
     @GetMapping("/sort_last_name")
-    public List<User> sortByLastName(){
+    public List<User> sortByLastName() {
         List<User> users = (List<User>) userService.getAllUsers();
         users.sort(new Comparator<User>() {
             @Override
@@ -197,7 +199,7 @@ public class MainController {
 
     //sort by middle name
     @GetMapping("/sort_middle_name")
-    public List<User> sortByMiddleName(){
+    public List<User> sortByMiddleName() {
         List<User> users = (List<User>) userService.getAllUsers();
         users.sort(new Comparator<User>() {
             @Override
@@ -211,7 +213,7 @@ public class MainController {
 
     //sort by email
     @GetMapping("/sort_email")
-    public List<User> sortByEmail(){
+    public List<User> sortByEmail() {
         List<User> users = (List<User>) userService.getAllUsers();
         users.sort(new Comparator<User>() {
             @Override
@@ -225,13 +227,13 @@ public class MainController {
 
     //sort by status
     @GetMapping("/sort_status")
-    public List<User> sortByStatus(){
+    public List<User> sortByStatus() {
         List<User> users = (List<User>) userService.getAllUsers();
         users.sort(new Comparator<User>() {
             @Override
             public int compare(User o1, User o2) {
-                if(o1.getStatus().getStatus() == o2.getStatus().getStatus()) return 0;
-                else if(o1.getStatus().getStatus() > o2.getStatus().getStatus()) return 1;
+                if (o1.getStatus().getStatus() == o2.getStatus().getStatus()) return 0;
+                else if (o1.getStatus().getStatus() > o2.getStatus().getStatus()) return 1;
                 else return -1;
             }
         });
@@ -241,7 +243,7 @@ public class MainController {
 
     //sort by division
     @GetMapping("/sort_division")
-    public List<User> sortByDivision(){
+    public List<User> sortByDivision() {
         List<User> users = (List<User>) userService.getAllUsers();
         users.sort(new Comparator<User>() {
             @Override
@@ -255,7 +257,7 @@ public class MainController {
 
     //sort by post
     @GetMapping("/sort_post")
-    public List<User> sortByPost(){
+    public List<User> sortByPost() {
         List<User> users = (List<User>) userService.getAllUsers();
         users.sort(new Comparator<User>() {
             @Override
@@ -269,7 +271,7 @@ public class MainController {
 
     //sort by birthday
     @GetMapping("/sort_birthday")
-    public List<User> sortByBirthday(){
+    public List<User> sortByBirthday() {
         List<User> users = (List<User>) userService.getAllUsers();
         users.sort(new Comparator<User>() {
             @Override
@@ -282,49 +284,48 @@ public class MainController {
     }
 
 
-
     ///////search methods
 
     //search by first name
     @PostMapping("/search_first_name")
-    public List<User> searchByFirstName(@RequestParam String firstName){
+    public List<User> searchByFirstName(@RequestParam String firstName) {
         return userService.searchByFirstName(firstName);
     }
 
 
     //search by last name
     @PostMapping("/search_last_name")
-    public List<User> searchByLastName(@RequestParam String lastName){
+    public List<User> searchByLastName(@RequestParam String lastName) {
         return userService.searchByLastName(lastName);
     }
 
     //search by middle name
     @PostMapping("/search_middle_name")
-    public List<User> searchByMiddleName(@RequestParam String middleName){
+    public List<User> searchByMiddleName(@RequestParam String middleName) {
         return userService.searchByMiddleName(middleName);
     }
 
     //search by status
     @PostMapping("/search_status")
-    public List<User> searchByStatus(@RequestParam String status){
+    public List<User> searchByStatus(@RequestParam String status) {
         return userService.searchByStatus(status);
     }
 
     //search by post
     @PostMapping("/search_post")
-    public List<User> searchByPost(@RequestParam String post){
+    public List<User> searchByPost(@RequestParam String post) {
         return userService.searchByPost(post);
     }
 
     //search by division
     @PostMapping("/search_division")
-    public List<User> searchByDivision(@RequestParam String division){
+    public List<User> searchByDivision(@RequestParam String division) {
         return userService.searchByDivision(division);
     }
 
     //search by email
     @PostMapping("/search_email")
-    public List<User> searchByEmail(@RequestParam String email){
+    public List<User> searchByEmail(@RequestParam String email) {
         return userService.searchByEmail(email);
     }
 

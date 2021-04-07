@@ -6,6 +6,7 @@ import ru.magnit.demo.dto.Response;
 import ru.magnit.demo.dto.ResponseStatus;
 import ru.magnit.demo.entity.User;
 import ru.magnit.demo.repository.UserRepository;
+import ru.magnit.demo.service.PhoneNumberService;
 import ru.magnit.demo.service.UserService;
 
 import java.util.List;
@@ -16,6 +17,9 @@ public class UserServiceImpl implements UserService{
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    PhoneNumberService phoneNumberService;
 
     @Override
     public User addUser(User user) {
@@ -28,8 +32,9 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public Response deleteUser(User user) {
-        userRepository.delete(user);
+    public Response deleteUserByEmail(String email) {
+        phoneNumberService.deletePhonesByEmail(email);
+        userRepository.deleteByEmail(email);
         return new Response(ResponseStatus.SUCCESS, "user has been deleted");
     }
 

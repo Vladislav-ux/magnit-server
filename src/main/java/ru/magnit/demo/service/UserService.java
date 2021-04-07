@@ -11,7 +11,7 @@ public interface UserService {
 
     User addUser(User user);
     Optional<User> getUserByEmail(String email);
-    Response deleteUser(User user);
+    Response deleteUserByEmail(String email);
     Iterable<User> getAllUsers();
 
     //update all fields

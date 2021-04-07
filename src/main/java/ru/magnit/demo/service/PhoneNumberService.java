@@ -10,4 +10,6 @@ public interface PhoneNumberService {
     PhoneNumber addPhone(PhoneNumber phoneNumber);
     List<PhoneNumber> getPhonesByEmail(String email);
     Response deletePhone(PhoneNumber phoneNumber);
+    void deletePhonesByEmail(String email);
+
 }

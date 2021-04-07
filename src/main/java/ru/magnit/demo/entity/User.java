@@ -44,6 +44,10 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private Collection<PhoneNumber> numbers;
 
+    public User(){
+
+    }
+
     public Collection<PhoneNumber> getNumbers() {
         return numbers;
     }
