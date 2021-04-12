@@ -20,6 +20,7 @@ import javax.servlet.http.HttpSession;
 import java.util.*;
 
 @RestController
+
 public class MainController {
 
     @Autowired
@@ -56,7 +57,7 @@ public class MainController {
         return new Response(ResponseStatus.ERROR, "user does not exist");
     }
 
-    @PostMapping("/user")
+    @GetMapping("/user")
     public Optional<User> getUserByEmail(@RequestHeader("Authorization") String email) {
         return userService.getUserByEmail(email);
     }
