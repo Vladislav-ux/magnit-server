@@ -1,5 +1,8 @@
 package ru.magnit.demo.controllers;
 
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +18,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @RestController
@@ -29,6 +34,60 @@ public class MainController {
 
     @Autowired
     private StatusService statusService;
+
+    @GetMapping(value = "/export")
+    public void export(HttpServletResponse response) throws Exception {
+        Iterator<User> iter = userService.getAllUsers().iterator();
+        List<User> users = new ArrayList<>();
+        while (iter.hasNext()) {
+            users.add(iter.next());
+        }
+
+        XSSFWorkbook workbook = new XSSFWorkbook();
+
+        Sheet sheet = workbook.createSheet("All Users List");
+        Row header = sheet.createRow(0);
+        header.createCell(0).setCellValue("Email");
+        header.createCell(1).setCellValue("First name");
+        header.createCell(2).setCellValue("Last name");
+        header.createCell(3).setCellValue("Middle Name");
+        header.createCell(4).setCellValue("Avatar");
+        header.createCell(5).setCellValue("Birthday");
+        header.createCell(6).setCellValue("Division");
+        header.createCell(7).setCellValue("Post");
+        header.createCell(8).setCellValue("Status");
+        header.createCell(9).setCellValue("Phone number1");
+        header.createCell(10).setCellValue("Phone number2");
+        header.createCell(11).setCellValue("Phone number3");
+        header.createCell(12).setCellValue("Phone number4");
+        header.createCell(13).setCellValue("Phone number5");
+
+        int rowNum = 1;
+
+        for (User user : users) {
+            Row aRow = sheet.createRow(rowNum++);
+            aRow.createCell(0).setCellValue(user.getEmail());
+            aRow.createCell(1).setCellValue(user.getFirst_name());
+            aRow.createCell(2).setCellValue(user.getLast_name());
+            aRow.createCell(3).setCellValue(user.getMiddle_name());
+            aRow.createCell(4).setCellValue(user.getAvatar());
+            aRow.createCell(5).setCellValue(new SimpleDateFormat("yyyy-MM-dd").format(user.getBirthday()));
+            aRow.createCell(6).setCellValue(user.getDivision());
+            aRow.createCell(7).setCellValue(user.getPost());
+            aRow.createCell(8).setCellValue(user.getStatus().getStatus_name());
+
+            List<PhoneNumber> phoneNumbers = phoneNumberService.getPhonesByEmail(user.getEmail());
+            for (int i = 0; i < phoneNumbers.size(); i++) {
+                aRow.createCell(9 + i).setCellValue(phoneNumbers.get(i).getNumber());
+            }
+
+        }
+
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("content-disposition", "attachment; filename=myfile.xlsx");
+        workbook.write(response.getOutputStream());
+
+    }
 
     @GetMapping("/lk/{email}")
     public Response authorization(@PathVariable String email, HttpServletRequest request, HttpServletResponse response) {
@@ -148,7 +207,8 @@ public class MainController {
         return userService.changeMiddleName(email, middleName);
     }
 
-    //Modifying birthday
+    //TODO Modifying birthday
+
 
     //Modifying post
     @PostMapping("/change_post")
@@ -333,7 +393,7 @@ public class MainController {
         return userService.searchByEmail(email);
     }
 
-    //search by phone number
+    //TODO search by phone number
 //    @PostMapping("/search_phone")
 //    public List<User> searchByPhoneNumber(@RequestParam String phoneNumber){
 //        return userService.searchByPhoneNumber(phoneNumber);
