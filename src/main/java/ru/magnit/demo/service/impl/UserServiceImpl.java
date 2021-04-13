@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.magnit.demo.dto.Response;
 import ru.magnit.demo.dto.ResponseStatus;
+import ru.magnit.demo.entity.PhoneNumber;
 import ru.magnit.demo.entity.User;
 import ru.magnit.demo.repository.UserRepository;
 import ru.magnit.demo.service.PhoneNumberService;
@@ -105,6 +106,21 @@ public class UserServiceImpl implements UserService{
         }
 
         return new Response(ResponseStatus.ERROR, "division was not updated");
+    }
+
+    @Override
+    public Response changePhoneNumber(String email, String oldNumber, String newNumber) {
+        try {
+            PhoneNumber phoneNumber = phoneNumberService.getPhoneNumberByEmailAndPhone(email, oldNumber);
+            phoneNumberService.deletePhone(phoneNumber);
+
+            phoneNumber.setNumber(newNumber);
+            phoneNumberService.addPhone(phoneNumber);
+
+            return new Response(ResponseStatus.SUCCESS, "phone number was updated");
+        }catch (Exception e) {
+            return new Response(ResponseStatus.ERROR, "phone number was updated");
+        }
     }
 
     @Override

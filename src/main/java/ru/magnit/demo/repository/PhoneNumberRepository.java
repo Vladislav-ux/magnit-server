@@ -20,4 +20,8 @@ public interface PhoneNumberRepository extends CrudRepository<PhoneNumber, Strin
     @Modifying
     @Query("delete from PhoneNumber p where p.user.email = :email")
     void deletePhonesByEmail(@Param("email") String email);
+
+    @Query("select p from PhoneNumber p where p.user.email = :email AND p.number = :phone")
+    PhoneNumber findPhoneNumberByNumberAndEmail(@Param("email") String email, @Param("phone") String phone);
+
 }

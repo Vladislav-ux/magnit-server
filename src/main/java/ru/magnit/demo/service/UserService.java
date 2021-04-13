@@ -20,6 +20,7 @@ public interface UserService {
     Response changeMiddleName(String email, String newName);
     Response changePost(String email, String post);
     Response changeDivision(String email, String division);
+    Response changePhoneNumber(String email, String oldNumber, String newNumber);
 
     //search all fields
     List<User> searchByFirstName(String firstName);

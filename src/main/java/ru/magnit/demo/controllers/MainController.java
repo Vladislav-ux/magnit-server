@@ -1,13 +1,11 @@
 package ru.magnit.demo.controllers;
 
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.magnit.demo.dto.Response;
 import ru.magnit.demo.dto.ResponseStatus;
 import ru.magnit.demo.entity.PhoneNumber;
-import ru.magnit.demo.entity.Status;
 import ru.magnit.demo.entity.User;
 import ru.magnit.demo.service.PhoneNumberService;
 import ru.magnit.demo.service.StatusService;
@@ -64,6 +62,7 @@ public class MainController {
 
     @PostMapping("/delete_number")
     public Response deletePhone(@RequestHeader("Authorization") String email, @RequestParam(name = "phone") String oldPhone) {
+        //TODO исправить new User()
         PhoneNumber phoneNumber = new PhoneNumber();
         phoneNumber.setNumber(oldPhone);
         phoneNumber.setUser(new User());
@@ -73,6 +72,7 @@ public class MainController {
 
     @PostMapping("/add_number")
     public void addPhone(@RequestHeader("Authorization") String email, @RequestParam(name = "phone") String newPhone) {
+        //TODO исправить new User()
         PhoneNumber phoneNumber = new PhoneNumber();
         phoneNumber.setNumber(newPhone);
         phoneNumber.setUser(new User());
@@ -163,10 +163,13 @@ public class MainController {
     }
 
     //Modifying number
-//    @PostMapping("/change_phone")
-//    public Response changePhone(@RequestHeader("Authorization") String email, @RequestParam String currentPhone){
-//        return userService.changeFirstName(email, currentPhone);
-//    }
+    @PostMapping("/change_phone")
+    public Response changePhone(@RequestHeader("Authorization") String email, @RequestBody Map<String, String> map){
+        String oldPhone = map.get("old_number");
+        String newPhone = map.get("new_number");
+
+        return userService.changePhoneNumber(email, oldPhone, newPhone);
+    }
 
     ///////sorting methods
 

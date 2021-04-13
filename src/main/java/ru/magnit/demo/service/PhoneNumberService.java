@@ -11,5 +11,5 @@ public interface PhoneNumberService {
     List<PhoneNumber> getPhonesByEmail(String email);
     Response deletePhone(PhoneNumber phoneNumber);
     void deletePhonesByEmail(String email);
-
+    PhoneNumber getPhoneNumberByEmailAndPhone(String email, String phoneNumber);
 }

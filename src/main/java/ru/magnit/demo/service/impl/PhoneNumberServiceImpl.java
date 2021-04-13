@@ -37,4 +37,9 @@ public class PhoneNumberServiceImpl implements PhoneNumberService {
     public void deletePhonesByEmail(String email) {
         phoneNumberRepository.deletePhonesByEmail(email);
     }
+
+    @Override
+    public PhoneNumber getPhoneNumberByEmailAndPhone(String email, String phoneNumber) {
+        return phoneNumberRepository.findPhoneNumberByNumberAndEmail(email, phoneNumber);
+    }
 }
