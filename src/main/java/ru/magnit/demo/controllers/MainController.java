@@ -37,18 +37,6 @@ public class MainController {
     @Autowired
     private StatusService statusService;
 
-    @PostMapping("/test_phone_code")
-    public void addPhoneWithCode(@RequestParam String number){
-        SMSCSender sd= new SMSCSender();
-
-        String[] ret = sd.send_sms(number, "Ваш пароль: 123", 1, "", "", 0, "", "");
-    }
-
-//    @PostMapping
-//    public void importData(){
-//
-//    }
-
     @GetMapping(value = "/export")
     public void exportSata(HttpServletResponse response) throws Exception {
         Iterator<User> iter = userService.getAllUsers().iterator();
