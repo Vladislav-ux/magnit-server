@@ -6,8 +6,10 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.magnit.demo.dto.CodeStorage;
 import ru.magnit.demo.dto.Response;
 import ru.magnit.demo.dto.ResponseStatus;
+import ru.magnit.demo.dto.SMSCSender;
 import ru.magnit.demo.entity.PhoneNumber;
 import ru.magnit.demo.entity.User;
 import ru.magnit.demo.service.PhoneNumberService;
@@ -35,8 +37,20 @@ public class MainController {
     @Autowired
     private StatusService statusService;
 
+    @PostMapping("/test_phone_code")
+    public void addPhoneWithCode(@RequestParam String number){
+        SMSCSender sd= new SMSCSender();
+
+        String[] ret = sd.send_sms(number, "Ваш пароль: 123", 1, "", "", 0, "", "");
+    }
+
+//    @PostMapping
+//    public void importData(){
+//
+//    }
+
     @GetMapping(value = "/export")
-    public void export(HttpServletResponse response) throws Exception {
+    public void exportSata(HttpServletResponse response) throws Exception {
         Iterator<User> iter = userService.getAllUsers().iterator();
         List<User> users = new ArrayList<>();
         while (iter.hasNext()) {
@@ -129,14 +143,29 @@ public class MainController {
         return phoneNumberService.deletePhone(phoneNumber);
     }
 
+    @Autowired
+    private CodeStorage codeStorage;
+
     @PostMapping("/add_number")
-    public void addPhone(@RequestHeader("Authorization") String email, @RequestParam(name = "phone") String newPhone) {
+    public void addPhone(@RequestParam(name = "phone") String newPhone) {
+        SMSCSender sd= new SMSCSender();
+        codeStorage.generateCode();
+        String[] ret = sd.send_sms(newPhone, "Your password : " + codeStorage.getCode(), 1, "", "", 0, "", "");
+    }
+
+    @PostMapping("/send_phone_code")
+    public Response sendPhoneCode(@RequestHeader("Authorization") String email, @RequestParam(name = "phone") String newPhone, @RequestParam(name = "code") int code){
         //TODO исправить new User()
-        PhoneNumber phoneNumber = new PhoneNumber();
-        phoneNumber.setNumber(newPhone);
-        phoneNumber.setUser(new User());
-        phoneNumber.getUser().setEmail(email);
-        phoneNumberService.addPhone(phoneNumber);
+        if(code == codeStorage.getCode()) {
+            PhoneNumber phoneNumber = new PhoneNumber();
+            phoneNumber.setNumber(newPhone);
+            phoneNumber.setUser(new User());
+            phoneNumber.getUser().setEmail(email);
+            phoneNumberService.addPhone(phoneNumber);
+            return new Response(ResponseStatus.SUCCESS, "phone number was added");
+        }
+
+        return new Response(ResponseStatus.ERROR, "code is invalid");
     }
 
     @GetMapping("/get_numbers")
