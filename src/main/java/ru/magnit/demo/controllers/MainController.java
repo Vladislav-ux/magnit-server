@@ -241,8 +241,7 @@ public class MainController {
 
     //Modifying number
     @PostMapping("/change_phone")
-    public Response changePhone(@RequestBody Map<String, String> map){
-        String email = map.get("email");
+    public Response changePhone(@RequestHeader("Authorization") String email, @RequestBody Map<String, String> map){
         String oldPhone = map.get("old_number");
         String newPhone = map.get("new_number");
 
