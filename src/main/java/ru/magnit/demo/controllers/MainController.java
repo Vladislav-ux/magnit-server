@@ -5,11 +5,9 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.json.JSONPropertyIgnore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
 import ru.magnit.demo.dto.CodeStorage;
 import ru.magnit.demo.dto.Response;
 import ru.magnit.demo.dto.ResponseStatus;
@@ -96,7 +94,7 @@ public class MainController {
     }
 
     @PostMapping("/import")
-    public Response importData(@RequestParam("excelFile") MultipartFile excelfile) {
+    public Response importData(@RequestParam("excel_file") MultipartFile excelfile) {
         try {
             int i = 1;
             XSSFWorkbook workbook = new XSSFWorkbook(excelfile.getInputStream());
@@ -197,7 +195,8 @@ public class MainController {
     }
 
     @PostMapping("/delete_number")
-    public Response deletePhone(@RequestHeader("Authorization") String email, @RequestParam(name = "phone") String oldPhone) {
+    public Response deletePhone(@RequestHeader("Authorization") String email,
+                                @RequestParam(name = "phone") String oldPhone) {
         //TODO исправить new User()
         PhoneNumber phoneNumber = new PhoneNumber();
         phoneNumber.setNumber(oldPhone);
@@ -208,8 +207,10 @@ public class MainController {
 
     //Добавление номера любому пользователю без кода подтверждения
     @PostMapping("/add_number_admin")
-    public Response addNumberByAdmin(@RequestParam(name = "email") String email, @RequestParam(name = "phone") String newPhone) {
+    public Response addNumberByAdmin(@RequestHeader("Authorization") String email,
+                                     @RequestParam(name = "phone") String newPhone) {
         try {
+            //TODO исправить new User()
             PhoneNumber phoneNumber = new PhoneNumber();
             phoneNumber.setNumber(newPhone);
             phoneNumber.setUser(new User());
@@ -217,7 +218,7 @@ public class MainController {
             phoneNumberService.addPhone(phoneNumber);
             return new Response(ResponseStatus.SUCCESS, "phone number was added");
         } catch (Exception e) {
-            return new Response(ResponseStatus.ERROR, "code is invalid");
+            return new Response(ResponseStatus.ERROR, "phone was not added");
         }
     }
 
@@ -228,24 +229,27 @@ public class MainController {
     public void addPhone(@RequestParam(name = "phone") String newPhone) {
         SMSCSender sd = new SMSCSender();
         codeStorage.generateCode();
-        String[] ret = sd.send_sms(newPhone, "Your password : " + codeStorage.getCode(), 0, "", "", 0, "Magnit", "");
+//        String[] ret = sd.send_sms(newPhone, "Your password : " + codeStorage.getCode(), 0, "", "", 0, "Magnit", "");
     }
 
     @PostMapping("/send_phone_code")
-    public Response sendPhoneCode(@RequestHeader("Authorization") String email, @RequestParam(name = "phone") String newPhone, @RequestParam(name = "code") int code) {
+    public Response sendPhoneCode(@RequestHeader("Authorization") String email,
+                                  @RequestParam(name = "phone") String newPhone,
+                                  @RequestParam(name = "code") int code) {
         //TODO исправить new User()
-        if (code == codeStorage.getCode()) {
+//        if (code == codeStorage.getCode()) {
             PhoneNumber phoneNumber = new PhoneNumber();
             phoneNumber.setNumber(newPhone);
             phoneNumber.setUser(new User());
             phoneNumber.getUser().setEmail(email);
             phoneNumberService.addPhone(phoneNumber);
             return new Response(ResponseStatus.SUCCESS, "phone number was added");
-        }
+//        }
 
-        return new Response(ResponseStatus.ERROR, "code is invalid");
+//        return new Response(ResponseStatus.ERROR, "code is invalid");
     }
 
+    //TODO убрать этот метод и возвращать все параметры для каждого User
     @GetMapping("/get_numbers")
     public List<String> getNumbers(@RequestHeader("Authorization") String email) {
         List<String> numbers = new ArrayList<>();
@@ -259,14 +263,15 @@ public class MainController {
 
     //get all users for admin and moderator
     @GetMapping("/users")
-    public List<User> getAllUsers() {
+    public List<User> getAllUsers(@RequestParam(name = "start_index") int startIndex,
+                                  @RequestParam(name = "last_index") int lastIndex) {
         Iterator<User> iter = userService.getAllUsers().iterator();
         List<User> users = new ArrayList<>();
         while (iter.hasNext()) {
             users.add(iter.next());
         }
 
-        return users;
+        return getLimitList(users, startIndex, lastIndex);
     }
 
     //////////Modifying methods
@@ -291,26 +296,29 @@ public class MainController {
         }
         User u = userService.addUser(user);
         if (u != null) {
-            return new Response(ResponseStatus.SUCCESS, "user added");
+            return new Response(ResponseStatus.SUCCESS, "user was added");
         }
-        return new Response(ResponseStatus.ERROR, "user did not add");
+        return new Response(ResponseStatus.ERROR, "user was not added");
     }
 
     //Modifying first_name
     @PostMapping("/change_first_name")
-    public Response changeFirstName(@RequestHeader("Authorization") String email, @RequestParam(name = "first_name") String firstName) {
+    public Response changeFirstName(@RequestHeader("Authorization") String email,
+                                    @RequestParam(name = "first_name") String firstName) {
         return userService.changeFirstName(email, firstName);
     }
 
     //Modifying last_name
     @PostMapping("/change_last_name")
-    public Response changeLastName(@RequestHeader("Authorization") String email, @RequestParam(name = "last_name") String lastName) {
+    public Response changeLastName(@RequestHeader("Authorization") String email,
+                                   @RequestParam(name = "last_name") String lastName) {
         return userService.changeLastName(email, lastName);
     }
 
     //Modifying middle_name
     @PostMapping("/change_middle_name")
-    public Response changeMiddleName(@RequestHeader("Authorization") String email, @RequestParam(name = "middle_name") String middleName) {
+    public Response changeMiddleName(@RequestHeader("Authorization") String email,
+                                     @RequestParam(name = "middle_name") String middleName) {
         return userService.changeMiddleName(email, middleName);
     }
 
@@ -319,22 +327,23 @@ public class MainController {
 
     //Modifying post
     @PostMapping("/change_post")
-    public Response changePostName(@RequestHeader("Authorization") String email, @RequestParam(name = "post") String post) {
+    public Response changePostName(@RequestHeader("Authorization") String email,
+                                   @RequestParam(name = "post") String post) {
         return userService.changePost(email, post);
     }
 
     //Modifying division
     @PostMapping("/change_division")
-    public Response changeDivisionName(@RequestHeader("Authorization") String email, @RequestParam(name = "division") String division) {
+    public Response changeDivisionName(@RequestHeader("Authorization") String email,
+                                       @RequestParam(name = "division") String division) {
         return userService.changeDivision(email, division);
     }
 
     //Modifying number
     @PostMapping("/change_phone")
-    public Response changePhone(@RequestHeader("Authorization") String email, @RequestBody Map<String, String> map) {
-        String oldPhone = map.get("old_number");
-        String newPhone = map.get("new_number");
-
+    public Response changePhone(@RequestHeader("Authorization") String email,
+                                @RequestParam(name = "old_number") String oldPhone,
+                                @RequestParam(name = "new_number") String newPhone) {
         return userService.changePhoneNumber(email, oldPhone, newPhone);
     }
 
@@ -343,7 +352,9 @@ public class MainController {
     //sort by first name
 
     @GetMapping("/sort_fio")
-    public List<User> sortByFIO(@RequestParam(required = false) List<User> list) {
+    public List<User> sortByFIO(@RequestParam(required = false) List<User> list,
+                                @RequestParam(name = "start_index") int startIndex,
+                                @RequestParam(name = "last_index") int lastIndex) {
         List<User> users = null;
 
         if (list == null) {
@@ -363,53 +374,14 @@ public class MainController {
             }
         });
 
-        return users;
+        return getLimitList(users, startIndex, lastIndex);
     }
-
-//    @GetMapping("/sort_first_name")
-//    public List<User> sortByFirstName() {
-//        List<User> users = (List<User>) userService.getAllUsers();
-//        users.sort(new Comparator<User>() {
-//            @Override
-//            public int compare(User o1, User o2) {
-//                return o1.getFirst_name().compareTo(o2.getFirst_name());
-//            }
-//        });
-//
-//        return users;
-//    }
-//
-//    //sort by last name
-//    @GetMapping("/sort_last_name")
-//    public List<User> sortByLastName() {
-//        List<User> users = (List<User>) userService.getAllUsers();
-//        users.sort(new Comparator<User>() {
-//            @Override
-//            public int compare(User o1, User o2) {
-//                return o1.getLast_name().compareTo(o2.getLast_name());
-//            }
-//        });
-//
-//        return users;
-//    }
-//
-//    //sort by middle name
-//    @GetMapping("/sort_middle_name")
-//    public List<User> sortByMiddleName() {
-//        List<User> users = (List<User>) userService.getAllUsers();
-//        users.sort(new Comparator<User>() {
-//            @Override
-//            public int compare(User o1, User o2) {
-//                return o1.getMiddle_name().compareTo(o2.getMiddle_name());
-//            }
-//        });
-//
-//        return users;
-//    }
 
     //sort by email
     @GetMapping("/sort_email")
-    public List<User> sortByEmail(@RequestParam(required = false) List<User> list) {
+    public List<User> sortByEmail(@RequestParam(required = false) List<User> list,
+                                  @RequestParam(name = "start_index") int startIndex,
+                                  @RequestParam(name = "last_index") int lastIndex) {
         List<User> users = null;
 
         if (list == null) {
@@ -425,12 +397,14 @@ public class MainController {
             }
         });
 
-        return users;
+        return getLimitList(users, startIndex, lastIndex);
     }
 
     //sort by status
     @GetMapping("/sort_status")
-    public List<User> sortByStatus(@RequestParam(required = false) List<User> list) {
+    public List<User> sortByStatus(@RequestParam(required = false) List<User> list,
+                                   @RequestParam(name = "start_index") int startIndex,
+                                   @RequestParam(name = "last_index") int lastIndex) {
         List<User> users = null;
 
         if (list == null) {
@@ -447,12 +421,14 @@ public class MainController {
             }
         });
 
-        return users;
+        return getLimitList(users, startIndex, lastIndex);
     }
 
     //sort by division
     @GetMapping("/sort_division")
-    public List<User> sortByDivision(@RequestParam(required = false) List<User> list) {
+    public List<User> sortByDivision(@RequestParam(required = false) List<User> list,
+                                     @RequestParam(name = "start_index") int startIndex,
+                                     @RequestParam(name = "last_index") int lastIndex) {
         List<User> users = null;
 
         if (list == null) {
@@ -467,12 +443,14 @@ public class MainController {
             }
         });
 
-        return users;
+        return getLimitList(users, startIndex, lastIndex);
     }
 
     //sort by post
     @GetMapping("/sort_post")
-    public List<User> sortByPost(@RequestParam(required = false) List<User> list) {
+    public List<User> sortByPost(@RequestParam(required = false) List<User> list,
+                                 @RequestParam(name = "start_index") int startIndex,
+                                 @RequestParam(name = "last_index") int lastIndex) {
         List<User> users = null;
 
         if (list == null) {
@@ -488,13 +466,15 @@ public class MainController {
             }
         });
 
-        return users;
+        return getLimitList(users, startIndex, lastIndex);
     }
 
     //sort by birthday
     //TODO сделать сортировку
     @GetMapping("/sort_birthday")
-    public List<User> sortByBirthday(@RequestParam(required = false) List<User> list) {
+    public List<User> sortByBirthday(@RequestParam(required = false) List<User> list,
+                                     @RequestParam(name = "start_index") int startIndex,
+                                     @RequestParam(name = "last_index") int lastIndex) {
         List<User> users = null;
 
         if (list == null) {
@@ -509,7 +489,7 @@ public class MainController {
             }
         });
 
-        return users;
+        return getLimitList(users, startIndex, lastIndex);
     }
 
 
@@ -517,45 +497,59 @@ public class MainController {
 
     //search by first name
     @PostMapping("/search_first_name")
-    public List<User> searchByFirstName(@RequestParam String firstName) {
-        return userService.searchByFirstName(firstName);
+    public List<User> searchByFirstName(@RequestParam String firstName,
+                                        @RequestParam(name = "start_index") int startIndex,
+                                        @RequestParam(name = "last_index") int lastIndex) {
+        return getLimitList(userService.searchByFirstName(firstName), startIndex, lastIndex);
     }
 
 
     //search by last name
     @PostMapping("/search_last_name")
-    public List<User> searchByLastName(@RequestParam String lastName) {
-        return userService.searchByLastName(lastName);
+    public List<User> searchByLastName(@RequestParam String lastName,
+                                       @RequestParam(name = "start_index") int startIndex,
+                                       @RequestParam(name = "last_index") int lastIndex) {
+        return  getLimitList(userService.searchByLastName(lastName), startIndex, lastIndex);
     }
 
     //search by middle name
     @PostMapping("/search_middle_name")
-    public List<User> searchByMiddleName(@RequestParam String middleName) {
-        return userService.searchByMiddleName(middleName);
+    public List<User> searchByMiddleName(@RequestParam String middleName,
+                                         @RequestParam(name = "start_index") int startIndex,
+                                         @RequestParam(name = "last_index") int lastIndex) {
+        return getLimitList(userService.searchByMiddleName(middleName), startIndex,lastIndex);
     }
 
     //search by status
     @PostMapping("/search_status")
-    public List<User> searchByStatus(@RequestParam String status) {
-        return userService.searchByStatus(status);
+    public List<User> searchByStatus(@RequestParam String status,
+                                     @RequestParam(name = "start_index") int startIndex,
+                                     @RequestParam(name = "last_index") int lastIndex) {
+        return getLimitList(userService.searchByStatus(status), startIndex, lastIndex);
     }
 
     //search by post
     @PostMapping("/search_post")
-    public List<User> searchByPost(@RequestParam String post) {
-        return userService.searchByPost(post);
+    public List<User> searchByPost(@RequestParam String post,
+                                   @RequestParam(name = "start_index") int startIndex,
+                                   @RequestParam(name = "last_index") int lastIndex) {
+        return getLimitList(userService.searchByPost(post), startIndex, lastIndex);
     }
 
     //search by division
     @PostMapping("/search_division")
-    public List<User> searchByDivision(@RequestParam String division) {
-        return userService.searchByDivision(division);
+    public List<User> searchByDivision(@RequestParam String division,
+                                       @RequestParam(name = "start_index") int startIndex,
+                                       @RequestParam(name = "last_index") int lastIndex) {
+        return getLimitList(userService.searchByDivision(division), startIndex, lastIndex);
     }
 
     //search by email
     @PostMapping("/search_email")
-    public List<User> searchByEmail(@RequestParam String email) {
-        return userService.searchByEmail(email);
+    public List<User> searchByEmail(@RequestParam String email,
+                                    @RequestParam(name = "start_index") int startIndex,
+                                    @RequestParam(name = "last_index") int lastIndex) {
+        return getLimitList(userService.searchByEmail(email), startIndex, lastIndex);
     }
 
     //TODO search by birthday
@@ -567,7 +561,9 @@ public class MainController {
 //    }
 
     @PostMapping("/search_and_sort")
-    public List<User> sortAndSearch(@RequestBody Map<String, Object> map) {
+    public List<User> sortAndSearch(@RequestBody Map<String, Object> map,
+                                    @RequestParam(name = "start_index") int startIndex,
+                                    @RequestParam(name = "last_index") int lastIndex) {
         int sortValue = (int) map.get("sort");
         int searchValue = (int) map.get("search");
 
@@ -576,40 +572,40 @@ public class MainController {
         switch (searchValue) {
             case 1:
                 //search email
-                list = searchByEmail((String) map.get("email"));
+                list = searchByEmail((String) map.get("email"), startIndex, lastIndex);
                 break;
             case 2:
                 //search division
-                list = searchByDivision((String) map.get("division"));
+                list = searchByDivision((String) map.get("division"), startIndex, lastIndex);
                 break;
 
             case 3:
                 //search post
-                list = searchByPost((String) map.get("post"));
+                list = searchByPost((String) map.get("post"), startIndex, lastIndex);
                 break;
 
             case 4:
                 //search status
-                list = searchByStatus((String) map.get("status_name"));
+                list = searchByStatus((String) map.get("status_name"), startIndex, lastIndex);
                 break;
 
             case 5:
                 // search first name
-                list = searchByFirstName((String) map.get("first_name"));
+                list = searchByFirstName((String) map.get("first_name"), startIndex, lastIndex);
                 break;
 
             case 6:
 //                search last name
-                list = searchByLastName((String) map.get("last_name"));
+                list = searchByLastName((String) map.get("last_name"), startIndex, lastIndex);
                 break;
 
             case 7:
                 //search middle name
-                list = searchByMiddleName((String) map.get("middle_name"));
+                list = searchByMiddleName((String) map.get("middle_name"), startIndex, lastIndex);
                 break;
 
             case 8:
-                //search birthday
+                //TODO search birthday
                 break;
 
             case 9:
@@ -621,38 +617,40 @@ public class MainController {
         switch (sortValue){
             case 1:
                 //sort email
-                return sortByEmail(list);
+                return sortByEmail(list, startIndex, lastIndex);
             case 2:
                 //sort division
-                return sortByDivision(list);
+                return sortByDivision(list, startIndex, lastIndex);
             case 3:
                 //sort post
-                return sortByPost(list);
+                return sortByPost(list, startIndex, lastIndex);
 
             case 4:
                 //sort status
-                return sortByStatus(list);
+                return sortByStatus(list, startIndex, lastIndex);
 
             case 5:
                 // sort first name
-                return sortByFIO(list);
+                return sortByFIO(list, startIndex, lastIndex);
 
             case 6:
                 //sort birthday
-                return sortByBirthday(list);
+                return sortByBirthday(list, startIndex, lastIndex);
         }
 
         return null;
     }
 
+    private List<User> getLimitList(List<User> list, int start_index, int last_index) {
+        if (list == null) {
+            return null;
+        }
 
-    private List<User> getLimitList(List<User> list, int star_index, int end_index){
-        try{
-            return list.subList(star_index, end_index);
-        }catch (Exception e){
-            if(star_index < list.size()) {
-                return list.subList(star_index, list.size() - 1);
-            }
+        if (last_index < list.size()) {
+            return list.subList(start_index, last_index + 1);
+        } else if (start_index < list.size()) {
+            return list.subList(start_index, list.size());
+        } else {
             return null;
         }
     }

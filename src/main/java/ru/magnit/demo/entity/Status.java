@@ -10,6 +10,7 @@ import java.util.Collection;
 public class Status {
 
     @Id
+//    @JsonIgnore
     @Column(name="status")
     private int status;
     @Column(name="status_name")

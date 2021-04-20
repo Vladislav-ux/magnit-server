@@ -40,7 +40,7 @@ public class User {
     @Column(name = "post")
     private String post;
 
-    @JsonIgnore
+//    @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private Collection<PhoneNumber> numbers;
 

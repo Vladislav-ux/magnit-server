@@ -1,5 +1,6 @@
 package ru.magnit.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
@@ -17,7 +18,8 @@ public class PhoneNumber {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "email")
-    @JsonIgnoreProperties(value = {"phone_number", "hibernateLazyInitializer"})
+    @JsonIgnore
+//    @JsonIgnoreProperties(value = {"phone_number", "hibernateLazyInitializer"})
     private User user;
 
 //    public String getEmail() {
