@@ -2,15 +2,20 @@ package ru.magnit.demo.controllers;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.json.JSONObject;
+import org.json.JSONPropertyIgnore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 import ru.magnit.demo.dto.CodeStorage;
 import ru.magnit.demo.dto.Response;
 import ru.magnit.demo.dto.ResponseStatus;
 import ru.magnit.demo.dto.SMSCSender;
 import ru.magnit.demo.entity.PhoneNumber;
+import ru.magnit.demo.entity.Status;
 import ru.magnit.demo.entity.User;
 import ru.magnit.demo.service.PhoneNumberService;
 import ru.magnit.demo.service.StatusService;
@@ -20,7 +25,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -91,6 +95,77 @@ public class MainController {
 
     }
 
+    @PostMapping("/import")
+    public Response importData(@RequestParam("excelFile") MultipartFile excelfile) {
+        try {
+            int i = 1;
+            XSSFWorkbook workbook = new XSSFWorkbook(excelfile.getInputStream());
+            XSSFSheet worksheet = workbook.getSheetAt(0);
+
+            while (i <= worksheet.getLastRowNum()) {
+                User user = new User();
+                XSSFRow row = worksheet.getRow(i++);
+
+                //TODO посмотреть, какое из полей можно оставить пустым
+                //TODO если любое поле будет пустым, то будет ошибка
+
+                user.setEmail(row.getCell(0).getStringCellValue());
+                user.setFirst_name(row.getCell(1).getStringCellValue());
+                user.setLast_name(row.getCell(2).getStringCellValue());
+                user.setMiddle_name(row.getCell(3).getStringCellValue());
+                user.setAvatar(row.getCell(4).getStringCellValue());
+                user.setBirthday(row.getCell(5).getDateCellValue());
+                user.setDivision(row.getCell(6).getStringCellValue());
+                user.setPost(row.getCell(7).getStringCellValue());
+
+                String statusName = row.getCell(8).getStringCellValue();
+                Status status = new Status();
+                switch (statusName) {
+                    case "user":
+                        status.setStatus(1);
+                        status.setStatus_name("user");
+                        user.setStatus(new Status());
+                        break;
+                    case "moderator":
+                        status.setStatus(3);
+                        status.setStatus_name("moderator");
+                        user.setStatus(new Status());
+                        break;
+                    case "admin":
+                        status.setStatus(2);
+                        status.setStatus_name("admin");
+                        user.setStatus(new Status());
+                        break;
+                    default:
+                        status.setStatus(1);
+                        status.setStatus_name("user");
+                        user.setStatus(new Status());
+                        break;
+                }
+
+                //добавление пользователя
+                Response response = addNewUser(user);
+                //TODO добавляем номера только тогда, когда пользователь был успешно добавлен
+                if (response.getStatus() == ResponseStatus.SUCCESS) {
+                    for (int j = 1; j <= 5; j++) {
+                        try {
+                            String phone = row.getCell(8 + i).getStringCellValue();
+                            addNumberByAdmin(user.getEmail(), phone);
+                        } catch (Exception ex) {
+                            break;
+                        }
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            return new Response(ResponseStatus.ERROR, "can not import data");
+        }
+
+        return new Response(ResponseStatus.SUCCESS, "all data downloaded");
+    }
+
+
     @GetMapping("/lk/{email}")
     public Response authorization(@PathVariable String email, HttpServletRequest request, HttpServletResponse response) {
         Optional<User> user = userService.getUserByEmail(email);
@@ -131,20 +206,35 @@ public class MainController {
         return phoneNumberService.deletePhone(phoneNumber);
     }
 
+    //Добавление номера любому пользователю без кода подтверждения
+    @PostMapping("/add_number_admin")
+    public Response addNumberByAdmin(@RequestParam(name = "email") String email, @RequestParam(name = "phone") String newPhone) {
+        try {
+            PhoneNumber phoneNumber = new PhoneNumber();
+            phoneNumber.setNumber(newPhone);
+            phoneNumber.setUser(new User());
+            phoneNumber.getUser().setEmail(email);
+            phoneNumberService.addPhone(phoneNumber);
+            return new Response(ResponseStatus.SUCCESS, "phone number was added");
+        } catch (Exception e) {
+            return new Response(ResponseStatus.ERROR, "code is invalid");
+        }
+    }
+
     @Autowired
     private CodeStorage codeStorage;
 
     @PostMapping("/add_number")
     public void addPhone(@RequestParam(name = "phone") String newPhone) {
-        SMSCSender sd= new SMSCSender();
+        SMSCSender sd = new SMSCSender();
         codeStorage.generateCode();
         String[] ret = sd.send_sms(newPhone, "Your password : " + codeStorage.getCode(), 0, "", "", 0, "Magnit", "");
     }
 
     @PostMapping("/send_phone_code")
-    public Response sendPhoneCode(@RequestHeader("Authorization") String email, @RequestParam(name = "phone") String newPhone, @RequestParam(name = "code") int code){
+    public Response sendPhoneCode(@RequestHeader("Authorization") String email, @RequestParam(name = "phone") String newPhone, @RequestParam(name = "code") int code) {
         //TODO исправить new User()
-        if(code == codeStorage.getCode()) {
+        if (code == codeStorage.getCode()) {
             PhoneNumber phoneNumber = new PhoneNumber();
             phoneNumber.setNumber(newPhone);
             phoneNumber.setUser(new User());
@@ -241,7 +331,7 @@ public class MainController {
 
     //Modifying number
     @PostMapping("/change_phone")
-    public Response changePhone(@RequestHeader("Authorization") String email, @RequestBody Map<String, String> map){
+    public Response changePhone(@RequestHeader("Authorization") String email, @RequestBody Map<String, String> map) {
         String oldPhone = map.get("old_number");
         String newPhone = map.get("new_number");
 
@@ -251,51 +341,83 @@ public class MainController {
     ///////sorting methods
 
     //sort by first name
-    @GetMapping("/sort_first_name")
-    public List<User> sortByFirstName() {
-        List<User> users = (List<User>) userService.getAllUsers();
+
+    @GetMapping("/sort_fio")
+    public List<User> sortByFIO(@RequestParam(required = false) List<User> list) {
+        List<User> users = null;
+
+        if (list == null) {
+            users = (List<User>) userService.getAllUsers();
+        } else {
+            users = list;
+        }
         users.sort(new Comparator<User>() {
             @Override
             public int compare(User o1, User o2) {
-                return o1.getFirst_name().compareTo(o2.getFirst_name());
+                //Заказчик попросил сортировать по ФИО именно так
+                String fio1 = o1.getLast_name() + o1.getFirst_name() + o1.getMiddle_name();
+                String fio2 = o2.getLast_name() + o2.getFirst_name() + o2.getMiddle_name();
+
+                return fio1.compareTo(fio2);
+//                return o1.getFirst_name().compareTo(o2.getFirst_name());
             }
         });
 
         return users;
     }
 
-    //sort by last name
-    @GetMapping("/sort_last_name")
-    public List<User> sortByLastName() {
-        List<User> users = (List<User>) userService.getAllUsers();
-        users.sort(new Comparator<User>() {
-            @Override
-            public int compare(User o1, User o2) {
-                return o1.getLast_name().compareTo(o2.getLast_name());
-            }
-        });
-
-        return users;
-    }
-
-    //sort by middle name
-    @GetMapping("/sort_middle_name")
-    public List<User> sortByMiddleName() {
-        List<User> users = (List<User>) userService.getAllUsers();
-        users.sort(new Comparator<User>() {
-            @Override
-            public int compare(User o1, User o2) {
-                return o1.getMiddle_name().compareTo(o2.getMiddle_name());
-            }
-        });
-
-        return users;
-    }
+//    @GetMapping("/sort_first_name")
+//    public List<User> sortByFirstName() {
+//        List<User> users = (List<User>) userService.getAllUsers();
+//        users.sort(new Comparator<User>() {
+//            @Override
+//            public int compare(User o1, User o2) {
+//                return o1.getFirst_name().compareTo(o2.getFirst_name());
+//            }
+//        });
+//
+//        return users;
+//    }
+//
+//    //sort by last name
+//    @GetMapping("/sort_last_name")
+//    public List<User> sortByLastName() {
+//        List<User> users = (List<User>) userService.getAllUsers();
+//        users.sort(new Comparator<User>() {
+//            @Override
+//            public int compare(User o1, User o2) {
+//                return o1.getLast_name().compareTo(o2.getLast_name());
+//            }
+//        });
+//
+//        return users;
+//    }
+//
+//    //sort by middle name
+//    @GetMapping("/sort_middle_name")
+//    public List<User> sortByMiddleName() {
+//        List<User> users = (List<User>) userService.getAllUsers();
+//        users.sort(new Comparator<User>() {
+//            @Override
+//            public int compare(User o1, User o2) {
+//                return o1.getMiddle_name().compareTo(o2.getMiddle_name());
+//            }
+//        });
+//
+//        return users;
+//    }
 
     //sort by email
     @GetMapping("/sort_email")
-    public List<User> sortByEmail() {
-        List<User> users = (List<User>) userService.getAllUsers();
+    public List<User> sortByEmail(@RequestParam(required = false) List<User> list) {
+        List<User> users = null;
+
+        if (list == null) {
+            users = (List<User>) userService.getAllUsers();
+        } else {
+            users = list;
+        }
+
         users.sort(new Comparator<User>() {
             @Override
             public int compare(User o1, User o2) {
@@ -308,8 +430,14 @@ public class MainController {
 
     //sort by status
     @GetMapping("/sort_status")
-    public List<User> sortByStatus() {
-        List<User> users = (List<User>) userService.getAllUsers();
+    public List<User> sortByStatus(@RequestParam(required = false) List<User> list) {
+        List<User> users = null;
+
+        if (list == null) {
+            users = (List<User>) userService.getAllUsers();
+        } else {
+            users = list;
+        }
         users.sort(new Comparator<User>() {
             @Override
             public int compare(User o1, User o2) {
@@ -324,8 +452,14 @@ public class MainController {
 
     //sort by division
     @GetMapping("/sort_division")
-    public List<User> sortByDivision() {
-        List<User> users = (List<User>) userService.getAllUsers();
+    public List<User> sortByDivision(@RequestParam(required = false) List<User> list) {
+        List<User> users = null;
+
+        if (list == null) {
+            users = (List<User>) userService.getAllUsers();
+        } else {
+            users = list;
+        }
         users.sort(new Comparator<User>() {
             @Override
             public int compare(User o1, User o2) {
@@ -338,8 +472,15 @@ public class MainController {
 
     //sort by post
     @GetMapping("/sort_post")
-    public List<User> sortByPost() {
-        List<User> users = (List<User>) userService.getAllUsers();
+    public List<User> sortByPost(@RequestParam(required = false) List<User> list) {
+        List<User> users = null;
+
+        if (list == null) {
+            users = (List<User>) userService.getAllUsers();
+        } else {
+            users = list;
+        }
+
         users.sort(new Comparator<User>() {
             @Override
             public int compare(User o1, User o2) {
@@ -351,9 +492,16 @@ public class MainController {
     }
 
     //sort by birthday
+    //TODO сделать сортировку
     @GetMapping("/sort_birthday")
-    public List<User> sortByBirthday() {
-        List<User> users = (List<User>) userService.getAllUsers();
+    public List<User> sortByBirthday(@RequestParam(required = false) List<User> list) {
+        List<User> users = null;
+
+        if (list == null) {
+            users = (List<User>) userService.getAllUsers();
+        } else {
+            users = list;
+        }
         users.sort(new Comparator<User>() {
             @Override
             public int compare(User o1, User o2) {
@@ -410,10 +558,102 @@ public class MainController {
         return userService.searchByEmail(email);
     }
 
+    //TODO search by birthday
+
     //TODO search by phone number
 //    @PostMapping("/search_phone")
 //    public List<User> searchByPhoneNumber(@RequestParam String phoneNumber){
 //        return userService.searchByPhoneNumber(phoneNumber);
 //    }
 
+    @PostMapping("/search_and_sort")
+    public List<User> sortAndSearch(@RequestBody Map<String, Object> map) {
+        int sortValue = (int) map.get("sort");
+        int searchValue = (int) map.get("search");
+
+        List<User> list = null;
+
+        switch (searchValue) {
+            case 1:
+                //search email
+                list = searchByEmail((String) map.get("email"));
+                break;
+            case 2:
+                //search division
+                list = searchByDivision((String) map.get("division"));
+                break;
+
+            case 3:
+                //search post
+                list = searchByPost((String) map.get("post"));
+                break;
+
+            case 4:
+                //search status
+                list = searchByStatus((String) map.get("status_name"));
+                break;
+
+            case 5:
+                // search first name
+                list = searchByFirstName((String) map.get("first_name"));
+                break;
+
+            case 6:
+//                search last name
+                list = searchByLastName((String) map.get("last_name"));
+                break;
+
+            case 7:
+                //search middle name
+                list = searchByMiddleName((String) map.get("middle_name"));
+                break;
+
+            case 8:
+                //search birthday
+                break;
+
+            case 9:
+                //TODO search phone number
+                break;
+
+        }
+
+        switch (sortValue){
+            case 1:
+                //sort email
+                return sortByEmail(list);
+            case 2:
+                //sort division
+                return sortByDivision(list);
+            case 3:
+                //sort post
+                return sortByPost(list);
+
+            case 4:
+                //sort status
+                return sortByStatus(list);
+
+            case 5:
+                // sort first name
+                return sortByFIO(list);
+
+            case 6:
+                //sort birthday
+                return sortByBirthday(list);
+        }
+
+        return null;
+    }
+
+
+    private List<User> getLimitList(List<User> list, int star_index, int end_index){
+        try{
+            return list.subList(star_index, end_index);
+        }catch (Exception e){
+            if(star_index < list.size()) {
+                return list.subList(star_index, list.size() - 1);
+            }
+            return null;
+        }
+    }
 }
