@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService{
                 userRepository.save(user.get());
                 return new Response(ResponseStatus.SUCCESS, "first name was updated");
             }catch (Exception e){
-                return new Response(ResponseStatus.ERROR, e.getMessage());
+                return new Response(ResponseStatus.ERROR, "first name was not updated");
             }
         }
 

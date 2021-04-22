@@ -8,6 +8,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import ru.magnit.demo.ServerApplication;
 import ru.magnit.demo.dto.CodeStorage;
 import ru.magnit.demo.dto.Response;
 import ru.magnit.demo.dto.ResponseStatus;
@@ -95,6 +96,7 @@ public class MainController {
 
     @PostMapping("/import")
     public Response importData(@RequestParam("excel_file") MultipartFile excelfile) {
+
         try {
             int i = 1;
             XSSFWorkbook workbook = new XSSFWorkbook(excelfile.getInputStream());
@@ -497,7 +499,7 @@ public class MainController {
 
     //search by first name
     @PostMapping("/search_first_name")
-    public List<User> searchByFirstName(@RequestParam String firstName,
+    public List<User> searchByFirstName(@RequestParam("first_name") String firstName,
                                         @RequestParam(name = "start_index") int startIndex,
                                         @RequestParam(name = "last_index") int lastIndex) {
         return getLimitList(userService.searchByFirstName(firstName), startIndex, lastIndex);
@@ -506,7 +508,7 @@ public class MainController {
 
     //search by last name
     @PostMapping("/search_last_name")
-    public List<User> searchByLastName(@RequestParam String lastName,
+    public List<User> searchByLastName(@RequestParam("last_name") String lastName,
                                        @RequestParam(name = "start_index") int startIndex,
                                        @RequestParam(name = "last_index") int lastIndex) {
         return  getLimitList(userService.searchByLastName(lastName), startIndex, lastIndex);
@@ -514,7 +516,7 @@ public class MainController {
 
     //search by middle name
     @PostMapping("/search_middle_name")
-    public List<User> searchByMiddleName(@RequestParam String middleName,
+    public List<User> searchByMiddleName(@RequestParam("middle_name") String middleName,
                                          @RequestParam(name = "start_index") int startIndex,
                                          @RequestParam(name = "last_index") int lastIndex) {
         return getLimitList(userService.searchByMiddleName(middleName), startIndex,lastIndex);
@@ -522,7 +524,7 @@ public class MainController {
 
     //search by status
     @PostMapping("/search_status")
-    public List<User> searchByStatus(@RequestParam String status,
+    public List<User> searchByStatus(@RequestParam("status") String status,
                                      @RequestParam(name = "start_index") int startIndex,
                                      @RequestParam(name = "last_index") int lastIndex) {
         return getLimitList(userService.searchByStatus(status), startIndex, lastIndex);
@@ -530,7 +532,7 @@ public class MainController {
 
     //search by post
     @PostMapping("/search_post")
-    public List<User> searchByPost(@RequestParam String post,
+    public List<User> searchByPost(@RequestParam("post") String post,
                                    @RequestParam(name = "start_index") int startIndex,
                                    @RequestParam(name = "last_index") int lastIndex) {
         return getLimitList(userService.searchByPost(post), startIndex, lastIndex);
@@ -538,7 +540,7 @@ public class MainController {
 
     //search by division
     @PostMapping("/search_division")
-    public List<User> searchByDivision(@RequestParam String division,
+    public List<User> searchByDivision(@RequestParam("division") String division,
                                        @RequestParam(name = "start_index") int startIndex,
                                        @RequestParam(name = "last_index") int lastIndex) {
         return getLimitList(userService.searchByDivision(division), startIndex, lastIndex);
@@ -546,7 +548,7 @@ public class MainController {
 
     //search by email
     @PostMapping("/search_email")
-    public List<User> searchByEmail(@RequestParam String email,
+    public List<User> searchByEmail(@RequestParam("email") String email,
                                     @RequestParam(name = "start_index") int startIndex,
                                     @RequestParam(name = "last_index") int lastIndex) {
         return getLimitList(userService.searchByEmail(email), startIndex, lastIndex);
