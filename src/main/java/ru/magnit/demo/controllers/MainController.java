@@ -363,7 +363,7 @@ public class MainController {
 
     //sort by first name
 
-    @GetMapping("/sort_fio")
+    @PostMapping("/sort_fio")
     public List<User> sortByFIO(@RequestParam(required = false) List<User> list,
                                 @RequestParam(name = "start_index") int startIndex,
                                 @RequestParam(name = "last_index") int lastIndex) {
