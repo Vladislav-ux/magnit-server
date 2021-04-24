@@ -76,10 +76,14 @@ public class MainController {
             aRow.createCell(2).setCellValue(user.getLast_name());
             aRow.createCell(3).setCellValue(user.getMiddle_name());
             aRow.createCell(4).setCellValue(user.getAvatar());
-            aRow.createCell(5).setCellValue(new SimpleDateFormat("yyyy-MM-dd").format(user.getBirthday()));
+            if(user.getBirthday() != null) {
+                aRow.createCell(5).setCellValue(new SimpleDateFormat("yyyy-MM-dd").format(user.getBirthday()));
+            }
             aRow.createCell(6).setCellValue(user.getDivision());
             aRow.createCell(7).setCellValue(user.getPost());
-            aRow.createCell(8).setCellValue(user.getStatus().getStatus_name());
+            if(user.getStatus() != null) {
+                aRow.createCell(8).setCellValue(user.getStatus().getStatus_name());
+            }
 
             List<PhoneNumber> phoneNumbers = phoneNumberService.getPhonesByEmail(user.getEmail());
             for (int i = 0; i < phoneNumbers.size(); i++) {
@@ -96,7 +100,7 @@ public class MainController {
 
     @PostMapping("/import")
     public Response importData(@RequestParam("excel_file") MultipartFile excelfile) {
-
+        System.out.println(excelfile.getContentType() + " excel = " + excelfile);
         try {
             int i = 1;
             XSSFWorkbook workbook = new XSSFWorkbook(excelfile.getInputStream());
@@ -325,7 +329,13 @@ public class MainController {
     }
 
     //TODO Modifying birthday
+    //Modifying birthday
+    @PostMapping("/change_birthday")
+    public Response changeBirthday(@RequestHeader("Authorization") String email,
+                                     @RequestParam(name = "birthday") Date birthday) {
 
+        return userService.changeBirthday(email, birthday);
+    }
 
     //Modifying post
     @PostMapping("/change_post")
@@ -487,7 +497,9 @@ public class MainController {
         users.sort(new Comparator<User>() {
             @Override
             public int compare(User o1, User o2) {
-                return 0;
+                if (o1.getBirthday().getTime() == o2.getBirthday().getTime()) return 0;
+                else if (o1.getBirthday().getTime() > o2.getBirthday().getTime()) return 1;
+                else return -1;
             }
         });
 
@@ -555,12 +567,31 @@ public class MainController {
     }
 
     //TODO search by birthday
+    //search by birthday
+    @PostMapping("/search_birthday")
+    public List<User> searchByBirthday(@RequestParam("birthday") Date birthday,
+                                    @RequestParam(name = "start_index") int startIndex,
+                                    @RequestParam(name = "last_index") int lastIndex) {
+        System.out.println("birthday = " + birthday.toString());
+        return getLimitList(userService.searchByBirthday(birthday), startIndex, lastIndex);
+    }
 
     //TODO search by phone number
-//    @PostMapping("/search_phone")
-//    public List<User> searchByPhoneNumber(@RequestParam String phoneNumber){
-//        return userService.searchByPhoneNumber(phoneNumber);
-//    }
+    //search by phone number
+    @PostMapping("/search_number")
+    public List<User> searchByNumber(@RequestParam("number") String number,
+                                    @RequestParam(name = "start_index") int startIndex,
+                                    @RequestParam(name = "last_index") int lastIndex) {
+        List<PhoneNumber> list = phoneNumberService.searchByPhoneNumber(number);
+        List<User> users = new ArrayList<>();
+
+        for (PhoneNumber pn:
+             list) {
+            users.add(userService.getUserByEmail(pn.getUser().getEmail()).get());
+        }
+
+        return getLimitList(users, startIndex, lastIndex);
+    }
 
     @PostMapping("/search_and_sort")
     public List<User> sortAndSearch(@RequestBody Map<String, Object> map,

@@ -42,4 +42,9 @@ public class PhoneNumberServiceImpl implements PhoneNumberService {
     public PhoneNumber getPhoneNumberByEmailAndPhone(String email, String phoneNumber) {
         return phoneNumberRepository.findPhoneNumberByNumberAndEmail(email, phoneNumber);
     }
+
+    @Override
+    public List<PhoneNumber> searchByPhoneNumber(String phoneNumber) {
+        return (List<PhoneNumber>) phoneNumberRepository.findByPhoneNumber(phoneNumber);
+    }
 }

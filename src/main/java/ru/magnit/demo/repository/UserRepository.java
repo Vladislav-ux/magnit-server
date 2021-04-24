@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.magnit.demo.entity.User;
 
+import java.util.Date;
+
 @Repository
 public interface UserRepository extends CrudRepository<User, String> {
 
@@ -37,6 +39,7 @@ public interface UserRepository extends CrudRepository<User, String> {
     @Query("select u from User u where u.status.status_name = :status")
     Iterable<User> findByStatus(@Param("status") String status);
 
-//    @Query("select u from User u where u.numbers. = :status")
-//    Iterable<User> findByStatus(@Param("status") String status);
+    @Query("select u from User u where u.birthday = :birthday")
+    Iterable<User> findByBirthday(@Param("birthday") Date birthday);
+
 }

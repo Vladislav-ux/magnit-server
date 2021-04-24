@@ -4,6 +4,7 @@ package ru.magnit.demo.service;
 import ru.magnit.demo.dto.Response;
 import ru.magnit.demo.entity.User;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,6 +22,7 @@ public interface UserService {
     Response changePost(String email, String post);
     Response changeDivision(String email, String division);
     Response changePhoneNumber(String email, String oldNumber, String newNumber);
+    Response changeBirthday(String email, Date birthday);
 
     //search all fields
     List<User> searchByFirstName(String firstName);
@@ -30,6 +32,6 @@ public interface UserService {
     List<User> searchByPost(String post);
     List<User> searchByDivision(String division);
     List<User> searchByStatus(String status);
-//    List<User> searchByPhoneNumber(String phoneNumber);
+    List<User> searchByBirthday(Date birthday);
 
 }

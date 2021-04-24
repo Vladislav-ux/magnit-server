@@ -10,6 +10,7 @@ import ru.magnit.demo.repository.UserRepository;
 import ru.magnit.demo.service.PhoneNumberService;
 import ru.magnit.demo.service.UserService;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -124,6 +125,22 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    public Response changeBirthday(String email, Date birthday) {
+        Optional<User> user = userRepository.findById(email);
+        if(user.isPresent()){
+            user.get().setBirthday(birthday);
+            try {
+                userRepository.save(user.get());
+                return new Response(ResponseStatus.SUCCESS, "birthday was updated");
+            }catch (Exception e){
+                return new Response(ResponseStatus.ERROR, e.getMessage());
+            }
+        }
+
+        return new Response(ResponseStatus.ERROR, "birthday was not updated");
+    }
+
+    @Override
     public List<User> searchByFirstName(String firstName) {
         return (List<User>)userRepository.findByFirstName(firstName);
     }
@@ -157,6 +174,11 @@ public class UserServiceImpl implements UserService{
     @Override
     public List<User> searchByStatus(String status) {
         return (List<User>)userRepository.findByStatus(status);
+    }
+
+    @Override
+    public List<User> searchByBirthday(Date birthday) {
+        return (List<User>) userRepository.findByBirthday(birthday);
     }
 
 //    @Override
