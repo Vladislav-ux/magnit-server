@@ -1,11 +1,13 @@
 package ru.magnit.demo.controllers;
 
+import com.sun.istack.NotNull;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.datasource.embedded.ConnectionProperties;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.magnit.demo.ServerApplication;
@@ -98,8 +100,8 @@ public class MainController {
 
     }
 
-    @PostMapping("/import")
-    public Response importData(@RequestBody MultipartFile excelfile) {
+//    @PostMapping("/import")
+//    public Response importData(@RequestBody MultipartFile excelfile) {
 //        System.out.println(file.toString());
 //        MultipartFile excelfile = null;
 //        try{
@@ -108,6 +110,9 @@ public class MainController {
 //            System.out.println(e);
 //            System.out.println(file.getClass().getName() + " ");
 //        }
+@RequestMapping(value = "/import", method = RequestMethod.POST, consumes = {"multipart/form-data"})
+@ResponseBody
+public Response executeSampleService(@RequestPart("file") MultipartFile excelfile) {
 
         System.out.println("excel = " + excelfile);
 
