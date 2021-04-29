@@ -129,22 +129,33 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
                 //TODO если любое поле будет пустым, то будет ошибка
 
                 user.setEmail(row.getCell(0).getStringCellValue());
+                System.out.println("email = " + row.getCell(0).getStringCellValue());
+
                 user.setFirst_name(row.getCell(1).getStringCellValue());
+                System.out.println("first_name = " + row.getCell(1).getStringCellValue());
+
                 user.setLast_name(row.getCell(2).getStringCellValue());
+                System.out.println("last_name = " + row.getCell(2).getStringCellValue());
+
                 user.setMiddle_name(row.getCell(3).getStringCellValue());
+                System.out.println("middle_name = " + row.getCell(3).getStringCellValue());
+
                 user.setAvatar(row.getCell(4).getStringCellValue());
+                System.out.println("avatar = " + row.getCell(4).getStringCellValue());
+
                 user.setBirthday(row.getCell(5).getDateCellValue());
+                System.out.println("birthday = " + row.getCell(5).getDateCellValue());
+
                 user.setDivision(row.getCell(6).getStringCellValue());
+                System.out.println("division = " + row.getCell(6).getStringCellValue());
+
                 user.setPost(row.getCell(7).getStringCellValue());
+                System.out.println("post = " + row.getCell(7).getStringCellValue());
+
 
                 String statusName = row.getCell(8).getStringCellValue();
                 Status status = new Status();
                 switch (statusName) {
-                    case "user":
-                        status.setStatus(1);
-                        status.setStatus_name("user");
-                        user.setStatus(new Status());
-                        break;
                     case "moderator":
                         status.setStatus(3);
                         status.setStatus_name("moderator");
@@ -153,16 +164,17 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
                     case "admin":
                         status.setStatus(2);
                         status.setStatus_name("admin");
-                        user.setStatus(new Status());
+                        user.setStatus(status);
                         break;
                     default:
                         status.setStatus(1);
                         status.setStatus_name("user");
-                        user.setStatus(new Status());
+                        user.setStatus(status);
                         break;
                 }
 
                 //добавление пользователя
+                System.out.println("добавление пользователя");
                 Response response = addNewUser(user);
                 //TODO добавляем номера только тогда, когда пользователь был успешно добавлен
                 if (response.getStatus() == ResponseStatus.SUCCESS) {
