@@ -99,16 +99,18 @@ public class MainController {
     }
 
     @PostMapping("/import")
-    public Response importData(@RequestBody Object file) {
-        System.out.println(file.toString());
-        MultipartFile excelfile = null;
-        try{
-            excelfile = (MultipartFile) file;
-        }catch (Exception e){
-            System.out.println(e);
-            System.out.println(file.getClass().getName() + " ");
-        }
+    public Response importData(@RequestBody MultipartFile excelfile) {
+//        System.out.println(file.toString());
+//        MultipartFile excelfile = null;
+//        try{
+//            excelfile = (MultipartFile) file;
+//        }catch (Exception e){
+//            System.out.println(e);
+//            System.out.println(file.getClass().getName() + " ");
+//        }
+
         System.out.println("excel = " + excelfile);
+
         try {
             int i = 1;
             XSSFWorkbook workbook = new XSSFWorkbook(excelfile.getInputStream());
