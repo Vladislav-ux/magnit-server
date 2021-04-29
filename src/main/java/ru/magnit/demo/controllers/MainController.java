@@ -100,16 +100,6 @@ public class MainController {
 
     }
 
-//    @PostMapping("/import")
-//    public Response importData(@RequestBody MultipartFile excelfile) {
-//        System.out.println(file.toString());
-//        MultipartFile excelfile = null;
-//        try{
-//            excelfile = (MultipartFile) file;
-//        }catch (Exception e){
-//            System.out.println(e);
-//            System.out.println(file.getClass().getName() + " ");
-//        }
 @RequestMapping(value = "/import", method = RequestMethod.POST, consumes = {"multipart/form-data"})
 @ResponseBody
 public Response executeSampleService(@RequestPart("file") MultipartFile excelfile) {
@@ -235,8 +225,8 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
         //TODO исправить new User()
         PhoneNumber phoneNumber = new PhoneNumber();
         phoneNumber.setNumber(oldPhone);
-        phoneNumber.setUser(new User());
-        phoneNumber.getUser().setEmail(email);
+        Optional<User> user = userService.getUserByEmail(email);
+        user.ifPresent(phoneNumber::setUser);
         return phoneNumberService.deletePhone(phoneNumber);
     }
 
@@ -245,13 +235,16 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
     public Response addNumberByAdmin(@RequestHeader("Authorization") String email,
                                      @RequestParam(name = "phone") String newPhone) {
         try {
-            //TODO исправить new User()
             PhoneNumber phoneNumber = new PhoneNumber();
             phoneNumber.setNumber(newPhone);
-            phoneNumber.setUser(new User());
-            phoneNumber.getUser().setEmail(email);
-            phoneNumberService.addPhone(phoneNumber);
-            return new Response(ResponseStatus.SUCCESS, "phone number was added");
+            Optional<User> user = userService.getUserByEmail(email);
+            if(user.isPresent()) {
+                phoneNumber.setUser(user.get());
+                phoneNumberService.addPhone(phoneNumber);
+                return new Response(ResponseStatus.SUCCESS, "phone number was added");
+            }else{
+                return new Response(ResponseStatus.ERROR, "no such user with email exists");
+            }
         } catch (Exception e) {
             return new Response(ResponseStatus.ERROR, "phone was not added");
         }
@@ -271,14 +264,17 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
     public Response sendPhoneCode(@RequestHeader("Authorization") String email,
                                   @RequestParam(name = "phone") String newPhone,
                                   @RequestParam(name = "code") int code) {
-        //TODO исправить new User()
 //        if (code == codeStorage.getCode()) {
             PhoneNumber phoneNumber = new PhoneNumber();
             phoneNumber.setNumber(newPhone);
-            phoneNumber.setUser(new User());
-            phoneNumber.getUser().setEmail(email);
-            phoneNumberService.addPhone(phoneNumber);
-            return new Response(ResponseStatus.SUCCESS, "phone number was added");
+            Optional<User> user = userService.getUserByEmail(email);
+            if(user.isPresent()) {
+                phoneNumber.setUser(user.get());
+                phoneNumberService.addPhone(phoneNumber);
+                return new Response(ResponseStatus.SUCCESS, "phone number was added");
+            }else{
+                return new Response(ResponseStatus.ERROR, "no such user with email exists");
+            }
 //        }
 
 //        return new Response(ResponseStatus.ERROR, "code is invalid");
