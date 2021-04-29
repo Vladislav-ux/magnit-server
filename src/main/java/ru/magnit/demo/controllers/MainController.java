@@ -99,7 +99,7 @@ public class MainController {
     }
 
     @PostMapping("/import")
-    public Response importData(@RequestParam("excel_file") MultipartFile excelfile) {
+    public Response importData(@RequestBody MultipartFile excelfile) {
         System.out.println(excelfile.getContentType() + " excel = " + excelfile);
         try {
             int i = 1;
