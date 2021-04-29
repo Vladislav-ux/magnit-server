@@ -100,7 +100,7 @@ public class MainController {
 
     @PostMapping("/import")
     public Response importData(@RequestBody MultipartFile excelfile) {
-        System.out.println(excelfile.getContentType() + " excel = " + excelfile);
+        System.out.println("excel = " + excelfile);
         try {
             int i = 1;
             XSSFWorkbook workbook = new XSSFWorkbook(excelfile.getInputStream());
