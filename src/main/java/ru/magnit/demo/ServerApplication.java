@@ -12,16 +12,16 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
-public class ServerApplication extends SpringBootServletInitializer {
+public class ServerApplication /*extends SpringBootServletInitializer*/ {
 
     public static void main(String[] args) {
         SpringApplication.run(ServerApplication.class, args);
     }
 
-    @Override
-    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
-        return builder.sources(SpringApplication.class);
-    }
+//    @Override
+//    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+//        return builder.sources(SpringApplication.class);
+//    }
 
     @Bean
     public TomcatServletWebServerFactory servletContainer() {
