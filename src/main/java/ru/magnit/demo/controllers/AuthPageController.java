@@ -131,7 +131,7 @@ public class AuthPageController {
     private String getUserInfoFromGraph(String accessToken) throws Exception {
         // Microsoft Graph user endpoint
         System.out.println("access Token = " + accessToken);
-        URL url = new URL(authHelper.getMsGraphEndpointHost() + "v1.0/me/checkMemberObjects");
+        URL url = new URL(authHelper.getMsGraphEndpointHost() + "v1.0/me");
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
         // Set the appropriate header fields in the request header.
