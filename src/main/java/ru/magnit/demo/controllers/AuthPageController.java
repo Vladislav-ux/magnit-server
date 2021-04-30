@@ -8,6 +8,7 @@ import com.nimbusds.jwt.JWTParser;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import ru.magnit.demo.auth.AuthHelper;
@@ -42,12 +43,12 @@ public class AuthPageController {
     @Autowired
     private PhoneNumberService phoneNumberService;
 
-    @RequestMapping("/msal4jsample")
+    @GetMapping("/msal4jsample")
     public String homepage(){
         return "index";
     }
 
-    @RequestMapping("/msal4jsample/secure/aad")
+    @GetMapping("/msal4jsample/secure/aad")
     public ModelAndView securePage(HttpServletRequest httpRequest) throws ParseException {
         //на данный урл стоит фильтр => если зашли внутрь метода, то уже авторизовались
         //TODO не возвращать страницу, а возвращать SUCCESS если пользователь успешно авторизован
@@ -61,7 +62,7 @@ public class AuthPageController {
         return mav;
     }
 
-    @RequestMapping("/msal4jsample/sign_out")
+    @GetMapping("/msal4jsample/sign_out")
     public void signOut(HttpServletRequest httpRequest, HttpServletResponse response) throws IOException {
 
         httpRequest.getSession().invalidate();
@@ -75,7 +76,7 @@ public class AuthPageController {
     }
 
     //TODO убрать mapping
-    @RequestMapping("/msal4jsample/graph/me")
+    @GetMapping("/msal4jsample/graph/me")
     public ModelAndView getUserFromGraph(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
             throws Throwable {
 
