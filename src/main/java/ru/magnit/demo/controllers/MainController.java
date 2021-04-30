@@ -39,9 +39,6 @@ public class MainController {
     @Autowired
     private PhoneNumberService phoneNumberService;
 
-    @Autowired
-    private StatusService statusService;
-
     @GetMapping(value = "/export")
     public void exportSata(HttpServletResponse response) throws Exception {
         Iterator<User> iter = userService.getAllUsers().iterator();
@@ -270,7 +267,11 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
             Optional<User> user = userService.getUserByEmail(email);
             if(user.isPresent()) {
                 phoneNumber.setUser(user.get());
-                phoneNumberService.addPhone(phoneNumber);
+                try {
+                    phoneNumberService.addPhone(phoneNumber);
+                }catch (Exception e){
+                    return new Response(ResponseStatus.ERROR, "phone number wasn't added");
+                }
                 return new Response(ResponseStatus.SUCCESS, "phone number was added");
             }else{
                 return new Response(ResponseStatus.ERROR, "no such user with email exists");
@@ -591,7 +592,6 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
         return getLimitList(userService.searchByEmail(email), startIndex, lastIndex);
     }
 
-    //TODO search by birthday
     //search by birthday
     @PostMapping("/search_birthday")
     public List<User> searchByBirthday(@RequestParam("birthday") Date birthday,
@@ -601,7 +601,6 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
         return getLimitList(userService.searchByBirthday(birthday), startIndex, lastIndex);
     }
 
-    //TODO search by phone number
     //search by phone number
     @PostMapping("/search_number")
     public List<User> searchByNumber(@RequestParam("number") String number,
@@ -663,11 +662,13 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
                 break;
 
             case 8:
-                //TODO search birthday
+                //TODO check search
+                list = searchByBirthday((Date) map.get("birthday"), startIndex, lastIndex);
                 break;
 
             case 9:
-                //TODO search phone number
+                //TODO check search
+                list = searchByNumber((String) map.get("phone"), startIndex, lastIndex);
                 break;
 
         }
