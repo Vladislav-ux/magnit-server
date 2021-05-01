@@ -211,8 +211,10 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
 //        return new Response(ResponseStatus.ERROR, "user does not exist");
 //    }
 
-    @GetMapping("/user")
-    public Optional<User> getUserByEmail(@RequestHeader("Authorization") String email) {
+    @GetMapping(value="/user")
+    public Optional<User> getUserByEmail(@RequestHeader("Authorization") String email, HttpServletResponse response) {
+        response.setHeader("Content-type", "text/html");
+        response.setHeader("Access-Control-Allow-Origin", "*");
         return userService.getUserByEmail(email);
     }
 
