@@ -30,6 +30,18 @@ public class AuthFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response,
                          FilterChain chain) throws IOException, ServletException {
+        HttpServletRequest servletRequest = (HttpServletRequest) request;
+        HttpServletResponse servletResponse = (HttpServletResponse) response;
+
+        servletResponse.addHeader("Access-Control-Allow-Origin","*");
+        servletResponse.addHeader("Access-Control-Allow-Methods","GET,POST,OPTIONS");
+        servletResponse.addHeader("Access-Control-Allow-Headers","Origin, X-Requested-With, Content-Type, Accept");
+
+        if(servletRequest.getMethod().equals("OPTIONS"))
+        {
+            servletResponse.setStatus(HttpServletResponse.SC_OK);
+            return;
+        }
 
         if (request instanceof HttpServletRequest) {
             HttpServletRequest httpRequest = (HttpServletRequest) request;

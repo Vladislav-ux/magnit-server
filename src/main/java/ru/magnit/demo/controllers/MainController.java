@@ -213,17 +213,6 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
 
     @GetMapping(value="/user")
     public Optional<User> getUserByEmail(@RequestHeader("Authorization") String email, HttpServletRequest request, HttpServletResponse response) {
-        response.setHeader("Content-type", "text/html");
-        response.addHeader("Access-Control-Allow-Origin","*");
-        response.addHeader("Access-Control-Allow-Methods","GET,POST,OPTIONS");
-        response.addHeader("Access-Control-Allow-Headers","Origin, X-Requested-With, Content-Type, Accept");
-
-        if(request.getMethod().equals("OPTIONS"))
-        {
-            response.setStatus(HttpServletResponse.SC_OK);
-        }
-
-//        response.setHeader("Access-Control-Allow-Origin", "*");
         return userService.getUserByEmail(email);
     }
 
