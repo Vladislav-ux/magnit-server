@@ -67,11 +67,11 @@
             <artifactId>msal4j</artifactId>
             <version>1.6.1</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>com.nimbusds</groupId>-->
-<!--            <artifactId>oauth2-oidc-sdk</artifactId>-->
-<!--            <version>6.5</version>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>com.nimbusds</groupId>
+            <artifactId>oauth2-oidc-sdk</artifactId>
+            <version>6.5</version>
+        </dependency>
 <!--        <dependency>-->
 <!--            <groupId>org.springframework.boot</groupId>-->
 <!--            <artifactId>spring-boot-starter-oauth2-client</artifactId>-->

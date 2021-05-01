@@ -84,6 +84,7 @@ public class AuthPageController {
 //        ModelAndView mav = new ModelAndView("auth_page");
 
 //        setAccountInfo(mav, httpRequest);
+        System.out.println("dfsdfsdfsdf");
         return new ModelAndView("redirect:" + CONTINUE_PAGE);
 //        return mav;
     }
