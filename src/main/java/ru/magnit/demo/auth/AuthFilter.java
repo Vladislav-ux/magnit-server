@@ -22,7 +22,7 @@ import java.util.Map;
 @Component
 public class AuthFilter implements Filter {
 
-    private List<String> excludedUrls = Arrays.asList("/", "msal4jsample/", "users/", "user/");
+    private List<String> excludedUrls = Arrays.asList("/", "msal4jsample/", "/users", "/user");
 
     @Autowired
     AuthHelper authHelper;
