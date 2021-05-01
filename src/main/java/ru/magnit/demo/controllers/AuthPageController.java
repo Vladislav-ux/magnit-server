@@ -142,7 +142,6 @@ public class AuthPageController {
                 cookie1.setMaxAge(-1);
                 httpResponse.addCookie(cookie1);
 
-                //TODO redirect using role
 //                mav = new ModelAndView("auth_page");
                 mav = new ModelAndView("redirect:" + LK_PAGE);
 //                setAccountInfo(mav, httpRequest);

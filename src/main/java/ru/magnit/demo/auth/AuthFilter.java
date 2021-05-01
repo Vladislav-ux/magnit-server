@@ -82,10 +82,10 @@ public class AuthFilter implements Filter {
                         authHelper.getRedirectUriSignIn());
                 return;
             } catch (Throwable exc) {
-                httpResponse.setStatus(500);
-                System.out.println(exc.getMessage());
-                request.setAttribute("error", exc.getMessage());
-                request.getRequestDispatcher("/error").forward(request, response);
+//                httpResponse.setStatus(500);
+//                System.out.println(exc.getMessage());
+//                request.setAttribute("error", exc.getMessage());
+//                request.getRequestDispatcher("/error").forward(request, response);
                 return;
             }
         }
