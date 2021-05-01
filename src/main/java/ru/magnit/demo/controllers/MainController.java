@@ -167,7 +167,7 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
                 if (response.getStatus() == ResponseStatus.SUCCESS) {
                     for (int j = 1; j <= 5; j++) {
                         try {
-                            String phone = row.getCell(8 + i).getStringCellValue();
+                            String phone = row.getCell(8 + i).getNumericCellValue() + "";
                             System.out.println("phone = " + phone);
                             addNumberByAdmin(user.getEmail(), phone);
                         } catch (Exception ex) {

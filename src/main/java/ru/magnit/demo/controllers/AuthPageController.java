@@ -311,12 +311,12 @@ public class AuthPageController {
 //        return responseObject.toString();
 //    }
 
-    private void setAccountInfo(ModelAndView model, HttpServletRequest httpRequest) throws ParseException {
-        IAuthenticationResult auth = SessionManagementHelper.getAuthSessionObject(httpRequest);
-
-        String tenantId = JWTParser.parse(auth.idToken()).getJWTClaimsSet().getStringClaim("tid");
-
-        model.addObject("tenantId", tenantId);
-        model.addObject("account", SessionManagementHelper.getAuthSessionObject(httpRequest).account());
-    }
+//    private void setAccountInfo(ModelAndView model, HttpServletRequest httpRequest) throws ParseException {
+//        IAuthenticationResult auth = SessionManagementHelper.getAuthSessionObject(httpRequest);
+//
+//        String tenantId = JWTParser.parse(auth.idToken()).getJWTClaimsSet().getStringClaim("tid");
+//
+//        model.addObject("tenantId", tenantId);
+//        model.addObject("account", SessionManagementHelper.getAuthSessionObject(httpRequest).account());
+//    }
 }
