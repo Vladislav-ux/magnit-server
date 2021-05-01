@@ -186,30 +186,30 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
     }
 
 
-    @GetMapping("/lk/{email}")
-    public Response authorization(@PathVariable String email, HttpServletRequest request, HttpServletResponse response) {
-        Optional<User> user = userService.getUserByEmail(email);
-        if (user.isPresent()) {
-            //Сессия и куки
-            HttpSession session = request.getSession();
-            session.setAttribute("email", email);
-            session.setAttribute("status", user.get().getStatus());
-            //неактивность до закрытия браузера
-            session.setMaxInactiveInterval(-1);
-
-
-            Cookie cookie1 = new Cookie("email", email);
-            cookie1.setMaxAge(-1);
-            Cookie cookie2 = new Cookie("status", user.get().getStatus().getStatus() + "");
-            cookie2.setMaxAge(-1);
-
-            response.addCookie(cookie1);
-            response.addCookie(cookie2);
-
-            return new Response(ResponseStatus.SUCCESS, "user exists");
-        }
-        return new Response(ResponseStatus.ERROR, "user does not exist");
-    }
+//    @GetMapping("/lk/{email}")
+//    public Response authorization(@PathVariable String email, HttpServletRequest request, HttpServletResponse response) {
+//        Optional<User> user = userService.getUserByEmail(email);
+//        if (user.isPresent()) {
+//            //Сессия и куки
+//            HttpSession session = request.getSession();
+//            session.setAttribute("email", email);
+//            session.setAttribute("status", user.get().getStatus());
+//            //неактивность до закрытия браузера
+//            session.setMaxInactiveInterval(-1);
+//
+//
+//            Cookie cookie1 = new Cookie("email", email);
+//            cookie1.setMaxAge(-1);
+//            Cookie cookie2 = new Cookie("status", user.get().getStatus().getStatus() + "");
+//            cookie2.setMaxAge(-1);
+//
+//            response.addCookie(cookie1);
+//            response.addCookie(cookie2);
+//
+//            return new Response(ResponseStatus.SUCCESS, "user exists");
+//        }
+//        return new Response(ResponseStatus.ERROR, "user does not exist");
+//    }
 
     @GetMapping("/user")
     public Optional<User> getUserByEmail(@RequestHeader("Authorization") String email) {
