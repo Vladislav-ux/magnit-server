@@ -22,7 +22,8 @@ import java.util.Map;
 @Component
 public class AuthFilter implements Filter {
 
-    private List<String> excludedUrls = Arrays.asList("/", "msal4jsample/", "/users", "/user");
+    private List<String> excludedUrls = Arrays.asList("/msal4jsample/secure/aad", "/msal4jsample/graph/me", "/msal4jsample/sign_out");
+//    private List<String> excludedUrls = Arrays.asList("/users", "/user", "/sort_fio");
 
     @Autowired
     AuthHelper authHelper;
@@ -30,22 +31,11 @@ public class AuthFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response,
                          FilterChain chain) throws IOException, ServletException {
-//        HttpServletRequest servletRequest = (HttpServletRequest) request;
-//        HttpServletResponse servletResponse = (HttpServletResponse) response;
-//
-//        servletResponse.addHeader("Access-Control-Allow-Origin","*");
-//        servletResponse.addHeader("Access-Control-Allow-Methods","GET,POST,OPTIONS");
-//        servletResponse.addHeader("Access-Control-Allow-Headers","Origin, X-Requested-With, Content-Type, Accept");
-//
-//        if(servletRequest.getMethod().equals("OPTIONS"))
-//        {
-//            servletResponse.setStatus(HttpServletResponse.SC_OK);
-//            return;
-//        }
 
         if (request instanceof HttpServletRequest) {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
             HttpServletResponse httpResponse = (HttpServletResponse) response;
+
             try {
                 String currentUri = httpRequest.getRequestURL().toString();
                 String path = httpRequest.getServletPath();
@@ -53,24 +43,21 @@ public class AuthFilter implements Filter {
                 String fullUrl = currentUri + (queryStr != null ? "?" + queryStr : "");
 
                 // exclude home page
-                if(excludedUrls.contains(path)){
-                    chain.doFilter(request, response);
-                    return;
-                }
+                if (excludedUrls.contains(path)) {
 
-                if(containsAuthenticationCode(httpRequest)){
-                    // response should have authentication code, which will be used to acquire access token
-                    authHelper.processAuthenticationCodeRedirect(httpRequest, currentUri, fullUrl);
+                    if (containsAuthenticationCode(httpRequest)) {
+                        // response should have authentication code, which will be used to acquire access token
+                        authHelper.processAuthenticationCodeRedirect(httpRequest, currentUri, fullUrl);
 
-                    // remove query params so that containsAuthenticationCode will not be true on future requests
-                    ((HttpServletResponse) response).sendRedirect(currentUri);
+                        // remove query params so that containsAuthenticationCode will not be true on future requests
+                        ((HttpServletResponse) response).sendRedirect(currentUri);
 
-                    chain.doFilter(request, response);
-                    return;
-                }
+                        chain.doFilter(request, response);
+                        return;
+                    }
 
-                // check if user has a AuthData in the session
-                if (!isAuthenticated(httpRequest)) {
+                    // check if user has a AuthData in the session
+                    if (!isAuthenticated(httpRequest)) {
                         // not authenticated, redirecting to login.microsoft.com so user can authenticate
                         authHelper.sendAuthRedirect(
                                 httpRequest,
@@ -78,10 +65,14 @@ public class AuthFilter implements Filter {
                                 null,
                                 authHelper.getRedirectUriSignIn());
                         return;
-                }
+                    }
 
-                if (isAccessTokenExpired(httpRequest)) {
-                    updateAuthDataUsingSilentFlow(httpRequest, httpResponse);
+                    if (isAccessTokenExpired(httpRequest)) {
+                        updateAuthDataUsingSilentFlow(httpRequest, httpResponse);
+                    }
+                }else{
+                    chain.doFilter(request, response);
+                    return;
                 }
             } catch (MsalException authException) {
                 // something went wrong (like expiration or revocation of token)

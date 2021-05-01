@@ -61,7 +61,6 @@ class AuthHelper {
 
     void processAuthenticationCodeRedirect(HttpServletRequest httpRequest, String currentUri, String fullUrl)
             throws Throwable {
-
         Map<String, List<String>> params = new HashMap<>();
         for (String key : httpRequest.getParameterMap().keySet()) {
             params.put(key, Collections.singletonList(httpRequest.getParameterMap().get(key)[0]));

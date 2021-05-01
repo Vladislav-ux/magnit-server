@@ -59,10 +59,10 @@ public class AuthPageController {
     @Autowired
     private PhoneNumberService phoneNumberService;
 
-    @GetMapping("/msal4jsample")
-    public String homepage(){
-        return "index";
-    }
+//    @GetMapping("/msal4jsample")
+//    public String homepage(){
+//        return "index";
+//    }
 
     @GetMapping("/msal4jsample/sign_out")
     public void signOut(HttpServletRequest httpRequest, HttpServletResponse response) throws IOException {
@@ -82,7 +82,6 @@ public class AuthPageController {
     @GetMapping("/msal4jsample/secure/aad")
     public ModelAndView securePage(HttpServletRequest httpRequest, HttpServletResponse httpServletResponse) throws ParseException {
 //        ModelAndView mav = new ModelAndView("auth_page");
-
 //        setAccountInfo(mav, httpRequest);
         System.out.println("dfsdfsdfsdf");
         return new ModelAndView("redirect:" + CONTINUE_PAGE);

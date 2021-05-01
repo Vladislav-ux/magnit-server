@@ -17,7 +17,6 @@ public class HttpClientHelper {
     }
 
     public static String getResponseStringFromConn(HttpURLConnection conn) throws IOException {
-
         BufferedReader reader;
         if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
             reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -33,16 +32,16 @@ public class HttpClientHelper {
         return stringBuilder.toString();
     }
 
-    public static JSONObject processResponse(int responseCode, String response) throws JSONException {
-
-        JSONObject responseJson = new JSONObject();
-        responseJson.put("responseCode", responseCode);
-
-        if (response.equalsIgnoreCase("")) {
-            responseJson.put("responseMsg", "");
-        } else {
-            responseJson.put("responseMsg", new JSONObject(response));
-        }
-        return responseJson;
-    }
+//    public static JSONObject processResponse(int responseCode, String response) throws JSONException {
+//
+//        JSONObject responseJson = new JSONObject();
+//        responseJson.put("responseCode", responseCode);
+//
+//        if (response.equalsIgnoreCase("")) {
+//            responseJson.put("responseMsg", "");
+//        } else {
+//            responseJson.put("responseMsg", new JSONObject(response));
+//        }
+//        return responseJson;
+//    }
 }
