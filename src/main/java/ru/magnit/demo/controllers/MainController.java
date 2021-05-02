@@ -359,7 +359,7 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
         return userService.changePhoneNumber(email, oldPhone, newPhone);
     }
 
-    ///////sorting methods
+    //////////////////////////////////////////////////////////////sorting methods
 
     //sort by first name
 
@@ -482,7 +482,6 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
     }
 
     //sort by birthday
-    //TODO сделать сортировку
     @GetMapping("/sort_birthday")
     public List<User> sortByBirthday(@RequestParam(required = false) List<User> list,
                                      @RequestParam(name = "start_index") int startIndex,
@@ -507,7 +506,152 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
     }
 
 
-    ///////search methods
+    //////////////////////////////////////////////////////////////sorting methods reverse
+
+    //sort by first name
+    @PostMapping("/sort_fio_reverse")
+    public List<User> sortByFIOReverse(@RequestParam(required = false) List<User> list,
+                                @RequestParam(name = "start_index") int startIndex,
+                                @RequestParam(name = "last_index") int lastIndex) {
+        List<User> users = null;
+
+        if (list == null) {
+            users = (List<User>) userService.getAllUsers();
+        } else {
+            users = list;
+        }
+        users.sort(new Comparator<User>() {
+            @Override
+            public int compare(User o1, User o2) {
+                //Заказчик попросил сортировать по ФИО именно так
+                String fio1 = o1.getLast_name() + o1.getFirst_name() + o1.getMiddle_name();
+                String fio2 = o2.getLast_name() + o2.getFirst_name() + o2.getMiddle_name();
+
+                return fio2.compareTo(fio1);
+//                return o1.getFirst_name().compareTo(o2.getFirst_name());
+            }
+        });
+
+        return getLimitList(users, startIndex, lastIndex);
+    }
+
+    //sort by email
+    @GetMapping("/sort_email_reverse")
+    public List<User> sortByEmailReverse(@RequestParam(required = false) List<User> list,
+                                  @RequestParam(name = "start_index") int startIndex,
+                                  @RequestParam(name = "last_index") int lastIndex) {
+        List<User> users = null;
+
+        if (list == null) {
+            users = (List<User>) userService.getAllUsers();
+        } else {
+            users = list;
+        }
+
+        users.sort(new Comparator<User>() {
+            @Override
+            public int compare(User o1, User o2) {
+                return o2.getEmail().compareTo(o1.getEmail());
+            }
+        });
+
+        return getLimitList(users, startIndex, lastIndex);
+    }
+
+    //sort by status
+    @GetMapping("/sort_status_reverse")
+    public List<User> sortByStatusReverse(@RequestParam(required = false) List<User> list,
+                                   @RequestParam(name = "start_index") int startIndex,
+                                   @RequestParam(name = "last_index") int lastIndex) {
+        List<User> users = null;
+
+        if (list == null) {
+            users = (List<User>) userService.getAllUsers();
+        } else {
+            users = list;
+        }
+        users.sort(new Comparator<User>() {
+            @Override
+            public int compare(User o1, User o2) {
+                if (o1.getStatus().getStatus() == o2.getStatus().getStatus()) return 0;
+                else if (o1.getStatus().getStatus() < o2.getStatus().getStatus()) return 1;
+                else return -1;
+            }
+        });
+
+        return getLimitList(users, startIndex, lastIndex);
+    }
+
+    //sort by division
+    @GetMapping("/sort_division_reverse")
+    public List<User> sortByDivisionReverse(@RequestParam(required = false) List<User> list,
+                                     @RequestParam(name = "start_index") int startIndex,
+                                     @RequestParam(name = "last_index") int lastIndex) {
+        List<User> users = null;
+
+        if (list == null) {
+            users = (List<User>) userService.getAllUsers();
+        } else {
+            users = list;
+        }
+        users.sort(new Comparator<User>() {
+            @Override
+            public int compare(User o1, User o2) {
+                return o2.getDivision().compareTo(o1.getDivision());
+            }
+        });
+
+        return getLimitList(users, startIndex, lastIndex);
+    }
+
+    //sort by post
+    @GetMapping("/sort_post_reverse")
+    public List<User> sortByPostReverse(@RequestParam(required = false) List<User> list,
+                                 @RequestParam(name = "start_index") int startIndex,
+                                 @RequestParam(name = "last_index") int lastIndex) {
+        List<User> users = null;
+
+        if (list == null) {
+            users = (List<User>) userService.getAllUsers();
+        } else {
+            users = list;
+        }
+
+        users.sort(new Comparator<User>() {
+            @Override
+            public int compare(User o1, User o2) {
+                return o2.getPost().compareTo(o1.getPost());
+            }
+        });
+
+        return getLimitList(users, startIndex, lastIndex);
+    }
+
+    //sort by birthday
+    @GetMapping("/sort_birthday_reverse")
+    public List<User> sortByBirthdayReverse(@RequestParam(required = false) List<User> list,
+                                     @RequestParam(name = "start_index") int startIndex,
+                                     @RequestParam(name = "last_index") int lastIndex) {
+        List<User> users = null;
+
+        if (list == null) {
+            users = (List<User>) userService.getAllUsers();
+        } else {
+            users = list;
+        }
+        users.sort(new Comparator<User>() {
+            @Override
+            public int compare(User o1, User o2) {
+                if (o1.getBirthday().getTime() == o2.getBirthday().getTime()) return 0;
+                else if (o1.getBirthday().getTime() < o2.getBirthday().getTime()) return 1;
+                else return -1;
+            }
+        });
+
+        return getLimitList(users, startIndex, lastIndex);
+    }
+
+    //////////////////////////////////////////////////////////////////////search methods
 
     //search by first name
     @PostMapping("/search_first_name")
@@ -669,6 +813,30 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
             case 6:
                 //sort birthday
                 return sortByBirthday(list, startIndex, lastIndex);
+
+
+
+            case 7:
+                //sort email reverse
+                return sortByEmailReverse(list, startIndex, lastIndex);
+            case 8:
+                //sort division reverse
+                return sortByDivisionReverse(list, startIndex, lastIndex);
+            case 9:
+                //sort post reverse
+                return sortByPostReverse(list, startIndex, lastIndex);
+
+            case 10:
+                //sort status reverse
+                return sortByStatusReverse(list, startIndex, lastIndex);
+
+            case 11:
+                // sort first name reverse
+                return sortByFIOReverse(list, startIndex, lastIndex);
+
+            case 12:
+                //sort birthday reverse
+                return sortByBirthdayReverse(list, startIndex, lastIndex);
         }
 
         return null;
