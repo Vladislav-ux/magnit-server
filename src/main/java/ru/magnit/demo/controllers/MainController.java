@@ -163,11 +163,10 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
                 //добавление пользователя
                 System.out.println("добавление пользователя");
                 Response response = addNewUser(user);
-                //TODO добавляем номера только тогда, когда пользователь был успешно добавлен
                 if (response.getStatus() == ResponseStatus.SUCCESS) {
                     for (int j = 1; j <= 5; j++) {
                         try {
-                            String phone = row.getCell(8 + i).getNumericCellValue() + "";
+                            String phone = row.getCell(8 + i).getStringCellValue() + "";
                             System.out.println("phone = " + phone);
                             addNumberByAdmin(user.getEmail(), phone);
                         } catch (Exception ex) {
@@ -184,32 +183,6 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
 
         return new Response(ResponseStatus.SUCCESS, "all data downloaded");
     }
-
-
-//    @GetMapping("/lk/{email}")
-//    public Response authorization(@PathVariable String email, HttpServletRequest request, HttpServletResponse response) {
-//        Optional<User> user = userService.getUserByEmail(email);
-//        if (user.isPresent()) {
-//            //Сессия и куки
-//            HttpSession session = request.getSession();
-//            session.setAttribute("email", email);
-//            session.setAttribute("status", user.get().getStatus());
-//            //неактивность до закрытия браузера
-//            session.setMaxInactiveInterval(-1);
-//
-//
-//            Cookie cookie1 = new Cookie("email", email);
-//            cookie1.setMaxAge(-1);
-//            Cookie cookie2 = new Cookie("status", user.get().getStatus().getStatus() + "");
-//            cookie2.setMaxAge(-1);
-//
-//            response.addCookie(cookie1);
-//            response.addCookie(cookie2);
-//
-//            return new Response(ResponseStatus.SUCCESS, "user exists");
-//        }
-//        return new Response(ResponseStatus.ERROR, "user does not exist");
-//    }
 
     @GetMapping(value="/user")
     public Optional<User> getUserByEmail(@RequestHeader("Authorization") String email, HttpServletRequest request, HttpServletResponse response) {
