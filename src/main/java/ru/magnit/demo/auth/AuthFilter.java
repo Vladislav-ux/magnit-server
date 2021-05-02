@@ -86,7 +86,7 @@ public class AuthFilter implements Filter {
                 return;
             } catch (Throwable exc) {
 //                httpResponse.setStatus(500);
-//                System.out.println(exc.getMessage());
+                System.out.println(exc.getMessage());
 //                request.setAttribute("error", exc.getMessage());
 //                request.getRequestDispatcher("/error").forward(request, response);
                 return;
