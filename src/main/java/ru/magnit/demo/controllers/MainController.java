@@ -167,7 +167,15 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
                     for (int j = 1; j <= 5; j++) {
                         try {
                             String phone = row.getCell(8 + i).getStringCellValue() + "";
+                            String phone2 = "";
+                            try {
+                                phone2 = (long) (row.getCell(8 + i).getNumericCellValue()) + "";
+                            }catch (Exception e){
+                                System.out.println(e.getMessage());
+                                System.out.println("phone2 = " + phone2);
+                            }
                             System.out.println("phone = " + phone);
+
                             addNumberByAdmin(user.getEmail(), phone);
                         } catch (Exception ex) {
                             System.out.println(ex);
