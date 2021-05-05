@@ -71,18 +71,14 @@ public class AuthPageController {
         httpRequest.getSession().invalidate();
 
         String endSessionEndpoint = "https://login.microsoftonline.com/common/oauth2/v2.0/logout";
-
-//        String redirectUrl = "https://localhost:8443/msal4jsample/";
-
         response.sendRedirect(endSessionEndpoint + "?post_logout_redirect_uri=" +
                 URLEncoder.encode(START_PAGE, "UTF-8"));
     }
 
 
     @GetMapping("/msal4jsample/secure/aad")
-    public ModelAndView securePage(HttpServletRequest httpRequest, HttpServletResponse httpServletResponse) throws ParseException {
-
-        return new ModelAndView("redirect:" + CONTINUE_PAGE);
+    public /*ModelAndView*/ void securePage(HttpServletRequest httpRequest, HttpServletResponse httpServletResponse) throws ParseException {
+//        return new ModelAndView("redirect:" + CONTINUE_PAGE);
     }
 
     @GetMapping("/msal4jsample/graph/me")

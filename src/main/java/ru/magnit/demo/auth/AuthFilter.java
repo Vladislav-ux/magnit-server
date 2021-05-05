@@ -50,7 +50,7 @@ public class AuthFilter implements Filter {
                         authHelper.processAuthenticationCodeRedirect(httpRequest, currentUri, fullUrl);
 
                         // remove query params so that containsAuthenticationCode will not be true on future requests
-                        ((HttpServletResponse) response).sendRedirect(currentUri);
+                        ((HttpServletResponse) response).sendRedirect("http://localhost:8080/continue");
 
                         chain.doFilter(request, response);
                         return;
@@ -85,10 +85,10 @@ public class AuthFilter implements Filter {
                         authHelper.getRedirectUriSignIn());
                 return;
             } catch (Throwable exc) {
-//                httpResponse.setStatus(500);
+                httpResponse.setStatus(500);
                 System.out.println(exc.getMessage());
-//                request.setAttribute("error", exc.getMessage());
-//                request.getRequestDispatcher("/error").forward(request, response);
+                request.setAttribute("error", exc.getMessage());
+                request.getRequestDispatcher("/error").forward(request, response);
                 return;
             }
         }
