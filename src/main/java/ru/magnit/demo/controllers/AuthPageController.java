@@ -16,6 +16,7 @@ import ru.magnit.demo.auth.HttpClientHelper;
 import ru.magnit.demo.auth.SessionManagementHelper;
 import ru.magnit.demo.dto.Response;
 import ru.magnit.demo.dto.ResponseStatus;
+import ru.magnit.demo.entity.PhoneNumber;
 import ru.magnit.demo.entity.Status;
 import ru.magnit.demo.entity.User;
 import ru.magnit.demo.service.PhoneNumberService;
@@ -71,7 +72,6 @@ public class AuthPageController {
 
         String endSessionEndpoint = "https://login.microsoftonline.com/common/oauth2/v2.0/logout";
 
-        //TODO убрать, так как мне возвращать это не нужно ИЛИ заменить на редирект на исходную страницу
 //        String redirectUrl = "https://localhost:8443/msal4jsample/";
 
         response.sendRedirect(endSessionEndpoint + "?post_logout_redirect_uri=" +
@@ -81,11 +81,8 @@ public class AuthPageController {
 
     @GetMapping("/msal4jsample/secure/aad")
     public ModelAndView securePage(HttpServletRequest httpRequest, HttpServletResponse httpServletResponse) throws ParseException {
-//        ModelAndView mav = new ModelAndView("auth_page");
-//        setAccountInfo(mav, httpRequest);
-        System.out.println("dfsdfsdfsdf");
+
         return new ModelAndView("redirect:" + CONTINUE_PAGE);
-//        return mav;
     }
 
     @GetMapping("/msal4jsample/graph/me")
@@ -112,7 +109,6 @@ public class AuthPageController {
                         state,
                         nonce);
 
-                System.out.println("111111111");
                 return new ModelAndView("redirect:" + authorizationCodeUrl);
             } else {
 //                mav = new ModelAndView("error");
@@ -158,7 +154,6 @@ public class AuthPageController {
         return mav;
     }
 
-    //TODO мб сделать Response
     private void addUserToDB (JSONObject jsonUser){
         String email = jsonUser.getString("userPrincipalName");
         if(userService.getUserByEmail(email).isPresent())
@@ -179,19 +174,24 @@ public class AuthPageController {
             user.setPost(jsonUser.getString("jobTitle"));
         }catch (Exception ignored){}
 
-
-        //TODO set mobile phone
-
         Status status = new Status();
         status.setStatus_name(jsonUser.getString("role"));
         status.setStatus(jsonUser.getInt("roleCode"));
         user.setStatus(status);
 
         userService.addUser(user);
+
+        try {
+            String phoneNUmber = jsonUser.getString("mobilePhone");
+            PhoneNumber phone = new PhoneNumber();
+            phone.setNumber(phoneNUmber);
+            phone.setUser(userService.getUserByEmail(email).get());
+            phoneNumberService.addPhone(phone);
+        }catch (Exception ignored){}
     }
 
     private JSONObject getUser(String accessToken) throws Exception{
-        JSONObject firstObject = new JSONObject(getUserInfoFromGraph(accessToken));
+        JSONObject firstObject = new JSONObject(getUserInfo(accessToken));
         JSONObject secondObject = new JSONObject(getUserRole(accessToken));
         //...
 
@@ -218,7 +218,7 @@ public class AuthPageController {
         return firstObject.put("role", role).put("roleCode", roleCode);
     }
 
-    private String getUserInfoFromGraph(String accessToken) throws Exception {
+    private String getUserInfo(String accessToken) throws Exception {
         // Microsoft Graph user endpoint
         URL url = new URL(authHelper.getMsGraphEndpointHost() + "v1.0/me");
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -234,7 +234,6 @@ public class AuthPageController {
             throw new IOException(response);
         }
 
-//        JSONObject responseObject = HttpClientHelper.processResponse(responseCode, response);
         return response;
     }
 
@@ -270,53 +269,44 @@ public class AuthPageController {
             throw new IOException(response);
         }
 
-//        JSONObject responseObject = HttpClientHelper.processResponse(responseCode, response);
         return response;
     }
 
-//    private String getUserPhoto(String accessToken) throws Exception {
-//        // Microsoft Graph user endpoint
-//        System.out.println("access Token = " + accessToken);
-//        URL url = new URL(authHelper.getMsGraphEndpointHost() + "v1.0/me/checkMemberObjects");
-//        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-//
-//        // Set the appropriate header fields in the request header.
-//        conn.setRequestProperty("Authorization", "Bearer " + accessToken);
-//        conn.setRequestProperty("Accept", "application/json");
-//        conn.setRequestProperty("Content-type", "application/json");
-//        conn.setDoOutput(true);
-//        conn.setRequestMethod("POST");
-//
-//        JSONObject object = new JSONObject();
-//        String[] mass = new String[3];
-//        mass[0] = "9c4f6fd3-0a58-491b-8af1-d0683d09edab";//users
-//        mass[1] = "861afe35-712d-456b-9642-cb853d236fe1";//admins
-//        mass[2] = "0abd53ed-f139-42df-8f2d-98eec18c280c";//moderators
-//
-//        object.put("ids", mass);
-//
-//        try(OutputStream os = conn.getOutputStream()) {
-//            byte[] input = object.toString().getBytes("utf-8");
-//            os.write(input, 0, input.length);
-//        }
-//
-//        String response = HttpClientHelper.getResponseStringFromConn(conn);
-//
-//        int responseCode = conn.getResponseCode();
-//        if(responseCode != HttpURLConnection.HTTP_OK) {
-//            throw new IOException(response);
-//        }
-//
-//        JSONObject responseObject = HttpClientHelper.processResponse(responseCode, response);
-//        return responseObject.toString();
-//    }
+    private String getUserPhoto(String accessToken) throws Exception {
+        // Microsoft Graph user endpoint
+        System.out.println("access Token = " + accessToken);
+        URL url = new URL(authHelper.getMsGraphEndpointHost() + "v1.0/me/checkMemberObjects");
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
-//    private void setAccountInfo(ModelAndView model, HttpServletRequest httpRequest) throws ParseException {
-//        IAuthenticationResult auth = SessionManagementHelper.getAuthSessionObject(httpRequest);
-//
-//        String tenantId = JWTParser.parse(auth.idToken()).getJWTClaimsSet().getStringClaim("tid");
-//
-//        model.addObject("tenantId", tenantId);
-//        model.addObject("account", SessionManagementHelper.getAuthSessionObject(httpRequest).account());
-//    }
+        // Set the appropriate header fields in the request header.
+        conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+        conn.setRequestProperty("Accept", "application/json");
+        conn.setRequestProperty("Content-type", "application/json");
+        conn.setDoOutput(true);
+        conn.setRequestMethod("POST");
+
+        JSONObject object = new JSONObject();
+        String[] mass = new String[3];
+        mass[0] = "9c4f6fd3-0a58-491b-8af1-d0683d09edab";//users
+        mass[1] = "861afe35-712d-456b-9642-cb853d236fe1";//admins
+        mass[2] = "0abd53ed-f139-42df-8f2d-98eec18c280c";//moderators
+
+        object.put("ids", mass);
+
+        try(OutputStream os = conn.getOutputStream()) {
+            byte[] input = object.toString().getBytes("utf-8");
+            os.write(input, 0, input.length);
+        }
+
+        String response = HttpClientHelper.getResponseStringFromConn(conn);
+
+        int responseCode = conn.getResponseCode();
+        if(responseCode != HttpURLConnection.HTTP_OK) {
+            throw new IOException(response);
+        }
+
+        return response;
+    }
+
+
 }
