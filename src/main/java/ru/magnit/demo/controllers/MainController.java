@@ -913,13 +913,14 @@ public class MainController {
                 return sortByStatus(list, startIndex, lastIndex);
 
             case 5:
-                // sort first name
+                // sort fio
+                if(list==null && list.isEmpty())
+                    break;
                 return sortByFIO(list, startIndex, lastIndex);
 
             case 6:
                 //sort birthday
                 return sortByBirthday(list, startIndex, lastIndex);
-
 
             case 7:
                 //sort email reverse
