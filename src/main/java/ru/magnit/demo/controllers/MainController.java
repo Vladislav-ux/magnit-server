@@ -113,9 +113,6 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
                 User user = new User();
                 XSSFRow row = worksheet.getRow(i++);
 
-                //TODO посмотреть, какое из полей можно оставить пустым
-                //TODO если любое поле будет пустым, то будет ошибка
-
                 user.setEmail(row.getCell(0).getStringCellValue());
                 System.out.println("email = " + row.getCell(0).getStringCellValue());
 
@@ -194,7 +191,6 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
     @PostMapping("/delete_number")
     public Response deletePhone(@RequestHeader("Authorization") String email,
                                 @RequestParam(name = "phone") String oldPhone) {
-        //TODO исправить new User()
         PhoneNumber phoneNumber = new PhoneNumber();
         phoneNumber.setNumber(oldPhone);
         Optional<User> user = userService.getUserByEmail(email);
@@ -329,7 +325,6 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
         return userService.changeMiddleName(email, middleName);
     }
 
-    //TODO Modifying birthday
     //Modifying birthday
     @PostMapping("/change_birthday")
     public Response changeBirthday(@RequestHeader("Authorization") String email,
@@ -337,7 +332,7 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         try {
-            Date date = formatter.parse("2001-10-28");
+            Date date = formatter.parse(birthday);
             return userService.changeBirthday(email, date);
         } catch (ParseException e) {
             e.printStackTrace();
@@ -763,11 +758,17 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
 
     //search by birthday
     @PostMapping("/search_birthday")
-    public List<User> searchByBirthday(@RequestParam("birthday") Date birthday,
+    public List<User> searchByBirthday(@RequestParam("birthday") String birthday,
                                     @RequestParam(name = "start_index") int startIndex,
                                     @RequestParam(name = "last_index") int lastIndex) {
-        System.out.println("birthday = " + birthday.toString());
-        return getLimitList(userService.searchByBirthday(birthday), startIndex, lastIndex);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = new Date();
+        try {
+            date = formatter.parse("2001-10-28");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return getLimitList(userService.searchByBirthday(date), startIndex, lastIndex);
     }
 
     //search by phone number
@@ -831,12 +832,10 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
                 break;
 
             case 8:
-                //TODO check search
-                list = searchByBirthday((Date) map.get("birthday"), startIndex, lastIndex);
+                list = searchByBirthday((String) map.get("birthday"), startIndex, lastIndex);
                 break;
 
             case 9:
-                //TODO check search
                 list = searchByNumber((String) map.get("phone"), startIndex, lastIndex);
                 break;
 
