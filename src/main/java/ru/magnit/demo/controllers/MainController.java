@@ -248,7 +248,6 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
                 return new Response(ResponseStatus.ERROR, "no such user with email exists");
             }
 //        }
-
 //        return new Response(ResponseStatus.ERROR, "code is invalid");
     }
 
@@ -677,13 +676,12 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
     public List<User> searchByLastName(@RequestParam("last_name") String lastName,
                                        @RequestParam(name = "start_index") int startIndex,
                                        @RequestParam(name = "last_index") int lastIndex) {
-        List<User> users = userService.searchByFirstName(lastName.toLowerCase());
+        List<User> users = userService.searchByLastName(lastName.toLowerCase());
         if(lastName.length()>1) {
-            users.addAll(userService.searchByFirstName(lastName.substring(0, 1).toUpperCase() + lastName.substring(1).toLowerCase()));
+            users.addAll(userService.searchByLastName(lastName.substring(0, 1).toUpperCase() + lastName.substring(1).toLowerCase()));
         }
-        users.addAll(userService.searchByFirstName(lastName.toUpperCase()));
+        users.addAll(userService.searchByLastName(lastName.toUpperCase()));
         return getLimitList(users, startIndex, lastIndex);
-//        return  getLimitList(userService.searchByLastName(lastName), startIndex, lastIndex);
     }
 
     //search by middle name
@@ -691,13 +689,12 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
     public List<User> searchByMiddleName(@RequestParam("middle_name") String middleName,
                                          @RequestParam(name = "start_index") int startIndex,
                                          @RequestParam(name = "last_index") int lastIndex) {
-        List<User> users = userService.searchByFirstName(middleName.toLowerCase());
+        List<User> users = userService.searchByMiddleName(middleName.toLowerCase());
         if(middleName.length()>1) {
-            users.addAll(userService.searchByFirstName(middleName.substring(0, 1).toUpperCase() + middleName.substring(1).toLowerCase()));
+            users.addAll(userService.searchByMiddleName(middleName.substring(0, 1).toUpperCase() + middleName.substring(1).toLowerCase()));
         }
-        users.addAll(userService.searchByFirstName(middleName.toUpperCase()));
+        users.addAll(userService.searchByMiddleName(middleName.toUpperCase()));
         return getLimitList(users, startIndex, lastIndex);
-//        return getLimitList(userService.searchByMiddleName(middleName), startIndex,lastIndex);
     }
 
     //search by status
@@ -705,13 +702,12 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
     public List<User> searchByStatus(@RequestParam("status") String status,
                                      @RequestParam(name = "start_index") int startIndex,
                                      @RequestParam(name = "last_index") int lastIndex) {
-        List<User> users = userService.searchByFirstName(status.toLowerCase());
+        List<User> users = userService.searchByStatus(status.toLowerCase());
         if(status.length()>1) {
-            users.addAll(userService.searchByFirstName(status.substring(0, 1).toUpperCase() + status.substring(1).toLowerCase()));
+            users.addAll(userService.searchByStatus(status.substring(0, 1).toUpperCase() + status.substring(1).toLowerCase()));
         }
-        users.addAll(userService.searchByFirstName(status.toUpperCase()));
+        users.addAll(userService.searchByStatus(status.toUpperCase()));
         return getLimitList(users, startIndex, lastIndex);
-//        return getLimitList(userService.searchByStatus(status), startIndex, lastIndex);
     }
 
     //search by post
@@ -719,13 +715,12 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
     public List<User> searchByPost(@RequestParam("post") String post,
                                    @RequestParam(name = "start_index") int startIndex,
                                    @RequestParam(name = "last_index") int lastIndex) {
-        List<User> users = userService.searchByFirstName(post.toLowerCase());
+        List<User> users = userService.searchByPost(post.toLowerCase());
         if(post.length()>1) {
-            users.addAll(userService.searchByFirstName(post.substring(0, 1).toUpperCase() + post.substring(1).toLowerCase()));
+            users.addAll(userService.searchByPost(post.substring(0, 1).toUpperCase() + post.substring(1).toLowerCase()));
         }
-        users.addAll(userService.searchByFirstName(post.toUpperCase()));
+        users.addAll(userService.searchByPost(post.toUpperCase()));
         return getLimitList(users, startIndex, lastIndex);
-//        return getLimitList(userService.searchByPost(post), startIndex, lastIndex);
     }
 
     //search by division
@@ -733,13 +728,12 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
     public List<User> searchByDivision(@RequestParam("division") String division,
                                        @RequestParam(name = "start_index") int startIndex,
                                        @RequestParam(name = "last_index") int lastIndex) {
-        List<User> users = userService.searchByFirstName(division.toLowerCase());
+        List<User> users = userService.searchByDivision(division.toLowerCase());
         if(division.length()>1) {
-            users.addAll(userService.searchByFirstName(division.substring(0, 1).toUpperCase() + division.substring(1).toLowerCase()));
+            users.addAll(userService.searchByDivision(division.substring(0, 1).toUpperCase() + division.substring(1).toLowerCase()));
         }
-        users.addAll(userService.searchByFirstName(division.toUpperCase()));
+        users.addAll(userService.searchByDivision(division.toUpperCase()));
         return getLimitList(users, startIndex, lastIndex);
-//        return getLimitList(userService.searchByDivision(division), startIndex, lastIndex);
     }
 
     //search by email
@@ -747,13 +741,12 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
     public List<User> searchByEmail(@RequestParam("email") String email,
                                     @RequestParam(name = "start_index") int startIndex,
                                     @RequestParam(name = "last_index") int lastIndex) {
-        List<User> users = userService.searchByFirstName(email.toLowerCase());
+        List<User> users = userService.searchByEmail(email.toLowerCase());
         if(email.length()>1) {
-            users.addAll(userService.searchByFirstName(email.substring(0, 1).toUpperCase() + email.substring(1).toLowerCase()));
+            users.addAll(userService.searchByEmail(email.substring(0, 1).toUpperCase() + email.substring(1).toLowerCase()));
         }
-        users.addAll(userService.searchByFirstName(email.toUpperCase()));
+        users.addAll(userService.searchByEmail(email.toUpperCase()));
         return getLimitList(users, startIndex, lastIndex);
-//        return getLimitList(userService.searchByEmail(email), startIndex, lastIndex);
     }
 
     //search by birthday
