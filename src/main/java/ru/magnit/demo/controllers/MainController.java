@@ -226,9 +226,15 @@ public class MainController {
     private CodeStorage codeStorage;
 
     @PostMapping("/add_number")
-    public void addPhone(@RequestParam(name = "phone") String newPhone) {
+    public Response addPhone(@RequestHeader("Authorization") String email,
+                             @RequestParam(name = "phone") String newPhone) {
         SMSCSender sd = new SMSCSender();
         codeStorage.generateCode();
+
+        if(phoneNumberService.getPhoneNumberByEmailAndPhone(email, newPhone)!=null){
+            return new Response(ResponseStatus.ERROR, "phone number is exists");
+        }
+        return new Response(ResponseStatus.SUCCESS, "auth code was sent");
 //        String[] ret = sd.send_sms(newPhone, "Your password : " + codeStorage.getCode(), 0, "", "", 0, "Magnit", "");
     }
 
@@ -243,9 +249,6 @@ public class MainController {
         if (user.isPresent()) {
             phoneNumber.setUser(user.get());
             try {
-                if(phoneNumberService.getPhoneNumberByEmailAndPhone(email, newPhone)!=null){
-                    return new Response(ResponseStatus.ERROR, "phone number is exists");
-                }
                 phoneNumberService.addPhone(phoneNumber);
             } catch (Exception e) {
                 return new Response(ResponseStatus.ERROR, "phone number wasn't added");
