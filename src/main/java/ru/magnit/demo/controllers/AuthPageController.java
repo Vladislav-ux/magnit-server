@@ -60,10 +60,10 @@ public class AuthPageController {
     @Autowired
     private PhoneNumberService phoneNumberService;
 
-//    @GetMapping("/msal4jsample")
-//    public String homepage(){
-//        return "index";
-//    }
+    @GetMapping("/msal4jsample")
+    public String homepage(){
+        return "redirect:" + START_PAGE;
+    }
 
     @GetMapping("/msal4jsample/sign_out")
     public void signOut(HttpServletRequest httpRequest, HttpServletResponse response) throws IOException {
@@ -71,6 +71,8 @@ public class AuthPageController {
         httpRequest.getSession().invalidate();
 
         String endSessionEndpoint = "https://login.microsoftonline.com/common/oauth2/v2.0/logout";
+
+        String redirectUrl = "https://magnit-server.herokuapp.com/msal4jsample/";
         response.sendRedirect(endSessionEndpoint + "?post_logout_redirect_uri=" +
                 URLEncoder.encode(START_PAGE, "UTF-8"));
     }
