@@ -207,6 +207,10 @@ public class MainController {
             phoneNumber.setNumber(newPhone);
             Optional<User> user = userService.getUserByEmail(email);
             if (user.isPresent()) {
+                if(phoneNumberService.getPhoneNumberByEmailAndPhone(email, newPhone)!=null){
+                    return new Response(ResponseStatus.ERROR, "phone number is exists");
+                }
+
                 phoneNumber.setUser(user.get());
                 phoneNumberService.addPhone(phoneNumber);
                 return new Response(ResponseStatus.SUCCESS, "phone number was added");
@@ -239,6 +243,9 @@ public class MainController {
         if (user.isPresent()) {
             phoneNumber.setUser(user.get());
             try {
+                if(phoneNumberService.getPhoneNumberByEmailAndPhone(email, newPhone)!=null){
+                    return new Response(ResponseStatus.ERROR, "phone number is exists");
+                }
                 phoneNumberService.addPhone(phoneNumber);
             } catch (Exception e) {
                 return new Response(ResponseStatus.ERROR, "phone number wasn't added");
