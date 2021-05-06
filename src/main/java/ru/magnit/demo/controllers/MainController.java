@@ -304,28 +304,28 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
     }
 
     //Modifying first_name
-    @PostMapping("/change_first_name")
+    @GetMapping("/change_first_name")
     public Response changeFirstName(@RequestHeader("Authorization") String email,
                                     @RequestParam(name = "first_name") String firstName) {
         return userService.changeFirstName(email, firstName);
     }
 
     //Modifying last_name
-    @PostMapping("/change_last_name")
+    @GetMapping("/change_last_name")
     public Response changeLastName(@RequestHeader("Authorization") String email,
                                    @RequestParam(name = "last_name") String lastName) {
         return userService.changeLastName(email, lastName);
     }
 
     //Modifying middle_name
-    @PostMapping("/change_middle_name")
+    @GetMapping("/change_middle_name")
     public Response changeMiddleName(@RequestHeader("Authorization") String email,
                                      @RequestParam(name = "middle_name") String middleName) {
         return userService.changeMiddleName(email, middleName);
     }
 
     //Modifying birthday
-    @PostMapping("/change_birthday")
+    @GetMapping("/change_birthday")
     public Response changeBirthday(@RequestHeader("Authorization") String email,
                                      @RequestParam(name = "birthday") String birthday) {
 
@@ -340,21 +340,21 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
     }
 
     //Modifying post
-    @PostMapping("/change_post")
+    @GetMapping("/change_post")
     public Response changePostName(@RequestHeader("Authorization") String email,
                                    @RequestParam(name = "post") String post) {
         return userService.changePost(email, post);
     }
 
     //Modifying division
-    @PostMapping("/change_division")
+    @GetMapping("/change_division")
     public Response changeDivisionName(@RequestHeader("Authorization") String email,
                                        @RequestParam(name = "division") String division) {
         return userService.changeDivision(email, division);
     }
 
     //Modifying number
-    @PostMapping("/change_phone")
+    @GetMapping("/change_phone")
     public Response changePhone(@RequestHeader("Authorization") String email,
                                 @RequestParam(name = "old_number") String oldPhone,
                                 @RequestParam(name = "new_number") String newPhone) {
@@ -365,7 +365,7 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
 
     //sort by first name
 
-    @PostMapping("/sort_fio")
+    @GetMapping("/sort_fio")
     public List<User> sortByFIO(@RequestParam(required = false) List<User> list,
                                 @RequestParam(name = "start_index") int startIndex,
                                 @RequestParam(name = "last_index") int lastIndex) {
@@ -511,7 +511,7 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
     //////////////////////////////////////////////////////////////sorting methods reverse
 
     //sort by first name
-    @PostMapping("/sort_fio_reverse")
+    @GetMapping("/sort_fio_reverse")
     public List<User> sortByFIOReverse(@RequestParam(required = false) List<User> list,
                                 @RequestParam(name = "start_index") int startIndex,
                                 @RequestParam(name = "last_index") int lastIndex) {
@@ -656,7 +656,7 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
     //////////////////////////////////////////////////////////////////////search methods
 
     //search by first name
-    @PostMapping("/search_first_name")
+    @GetMapping("/search_first_name")
     public List<User> searchByFirstName(@RequestParam("first_name") String firstName,
                                         @RequestParam(name = "start_index") int startIndex,
                                         @RequestParam(name = "last_index") int lastIndex) {
@@ -672,7 +672,7 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
 
 
     //search by last name
-    @PostMapping("/search_last_name")
+    @GetMapping("/search_last_name")
     public List<User> searchByLastName(@RequestParam("last_name") String lastName,
                                        @RequestParam(name = "start_index") int startIndex,
                                        @RequestParam(name = "last_index") int lastIndex) {
@@ -685,7 +685,7 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
     }
 
     //search by middle name
-    @PostMapping("/search_middle_name")
+    @GetMapping("/search_middle_name")
     public List<User> searchByMiddleName(@RequestParam("middle_name") String middleName,
                                          @RequestParam(name = "start_index") int startIndex,
                                          @RequestParam(name = "last_index") int lastIndex) {
@@ -698,7 +698,7 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
     }
 
     //search by status
-    @PostMapping("/search_status")
+    @GetMapping("/search_status")
     public List<User> searchByStatus(@RequestParam("status") String status,
                                      @RequestParam(name = "start_index") int startIndex,
                                      @RequestParam(name = "last_index") int lastIndex) {
@@ -711,7 +711,7 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
     }
 
     //search by post
-    @PostMapping("/search_post")
+    @GetMapping("/search_post")
     public List<User> searchByPost(@RequestParam("post") String post,
                                    @RequestParam(name = "start_index") int startIndex,
                                    @RequestParam(name = "last_index") int lastIndex) {
@@ -724,7 +724,7 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
     }
 
     //search by division
-    @PostMapping("/search_division")
+    @GetMapping("/search_division")
     public List<User> searchByDivision(@RequestParam("division") String division,
                                        @RequestParam(name = "start_index") int startIndex,
                                        @RequestParam(name = "last_index") int lastIndex) {
@@ -737,7 +737,7 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
     }
 
     //search by email
-    @PostMapping("/search_email")
+    @GetMapping("/search_email")
     public List<User> searchByEmail(@RequestParam("email") String email,
                                     @RequestParam(name = "start_index") int startIndex,
                                     @RequestParam(name = "last_index") int lastIndex) {
@@ -750,7 +750,7 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
     }
 
     //search by birthday
-    @PostMapping("/search_birthday")
+    @GetMapping("/search_birthday")
     public List<User> searchByBirthday(@RequestParam("birthday") String birthday,
                                     @RequestParam(name = "start_index") int startIndex,
                                     @RequestParam(name = "last_index") int lastIndex) {
@@ -765,7 +765,7 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
     }
 
     //search by phone number
-    @PostMapping("/search_number")
+    @GetMapping("/search_number")
     public List<User> searchByNumber(@RequestParam("number") String number,
                                     @RequestParam(name = "start_index") int startIndex,
                                     @RequestParam(name = "last_index") int lastIndex) {
