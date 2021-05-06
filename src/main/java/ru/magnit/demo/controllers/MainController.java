@@ -76,12 +76,12 @@ public class MainController {
             aRow.createCell(2).setCellValue(user.getLast_name());
             aRow.createCell(3).setCellValue(user.getMiddle_name());
             aRow.createCell(4).setCellValue(user.getAvatar());
-            if(user.getBirthday() != null) {
+            if (user.getBirthday() != null) {
                 aRow.createCell(5).setCellValue(new SimpleDateFormat("yyyy-MM-dd").format(user.getBirthday()));
             }
             aRow.createCell(6).setCellValue(user.getDivision());
             aRow.createCell(7).setCellValue(user.getPost());
-            if(user.getStatus() != null) {
+            if (user.getStatus() != null) {
                 aRow.createCell(8).setCellValue(user.getStatus().getStatus_name());
             }
 
@@ -98,9 +98,9 @@ public class MainController {
 
     }
 
-@RequestMapping(value = "/import", method = RequestMethod.POST, consumes = {"multipart/form-data"})
-@ResponseBody
-public Response executeSampleService(@RequestPart("file") MultipartFile excelfile) {
+    @RequestMapping(value = "/import", method = RequestMethod.POST, consumes = {"multipart/form-data"})
+    @ResponseBody
+    public Response executeSampleService(@RequestPart("file") MultipartFile excelfile) {
 
         System.out.println("excel = " + excelfile);
 
@@ -183,7 +183,7 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
         return new Response(ResponseStatus.SUCCESS, "all data downloaded");
     }
 
-    @GetMapping(value="/user")
+    @GetMapping(value = "/user")
     public Optional<User> getUserByEmail(@RequestHeader("Authorization") String email, HttpServletRequest request, HttpServletResponse response) {
         return userService.getUserByEmail(email);
     }
@@ -206,11 +206,11 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
             PhoneNumber phoneNumber = new PhoneNumber();
             phoneNumber.setNumber(newPhone);
             Optional<User> user = userService.getUserByEmail(email);
-            if(user.isPresent()) {
+            if (user.isPresent()) {
                 phoneNumber.setUser(user.get());
                 phoneNumberService.addPhone(phoneNumber);
                 return new Response(ResponseStatus.SUCCESS, "phone number was added");
-            }else{
+            } else {
                 return new Response(ResponseStatus.ERROR, "no such user with email exists");
             }
         } catch (Exception e) {
@@ -233,20 +233,20 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
                                   @RequestParam(name = "phone") String newPhone,
                                   @RequestParam(name = "code") int code) {
 //        if (code == codeStorage.getCode()) {
-            PhoneNumber phoneNumber = new PhoneNumber();
-            phoneNumber.setNumber(newPhone);
-            Optional<User> user = userService.getUserByEmail(email);
-            if(user.isPresent()) {
-                phoneNumber.setUser(user.get());
-                try {
-                    phoneNumberService.addPhone(phoneNumber);
-                }catch (Exception e){
-                    return new Response(ResponseStatus.ERROR, "phone number wasn't added");
-                }
-                return new Response(ResponseStatus.SUCCESS, "phone number was added");
-            }else{
-                return new Response(ResponseStatus.ERROR, "no such user with email exists");
+        PhoneNumber phoneNumber = new PhoneNumber();
+        phoneNumber.setNumber(newPhone);
+        Optional<User> user = userService.getUserByEmail(email);
+        if (user.isPresent()) {
+            phoneNumber.setUser(user.get());
+            try {
+                phoneNumberService.addPhone(phoneNumber);
+            } catch (Exception e) {
+                return new Response(ResponseStatus.ERROR, "phone number wasn't added");
             }
+            return new Response(ResponseStatus.SUCCESS, "phone number was added");
+        } else {
+            return new Response(ResponseStatus.ERROR, "no such user with email exists");
+        }
 //        }
 //        return new Response(ResponseStatus.ERROR, "code is invalid");
     }
@@ -327,7 +327,7 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
     //Modifying birthday
     @GetMapping("/change_birthday")
     public Response changeBirthday(@RequestHeader("Authorization") String email,
-                                     @RequestParam(name = "birthday") String birthday) {
+                                   @RequestParam(name = "birthday") String birthday) {
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         try {
@@ -414,6 +414,7 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
         return getLimitList(users, startIndex, lastIndex);
     }
 
+    //TODO убрать
     //sort by status
     @GetMapping("/sort_status")
     public List<User> sortByStatus(@RequestParam(required = false) List<User> list,
@@ -453,6 +454,13 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
         users.sort(new Comparator<User>() {
             @Override
             public int compare(User o1, User o2) {
+                if (o1.getDivision() == null && o2.getDivision() == null) {
+                    return 0;
+                } else if (o1.getDivision() == null) {
+                    return 1;
+                } else if (o2.getDivision() == null) {
+                    return -1;
+                }
                 return o1.getDivision().compareTo(o2.getDivision());
             }
         });
@@ -476,6 +484,13 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
         users.sort(new Comparator<User>() {
             @Override
             public int compare(User o1, User o2) {
+                if (o1.getPost() == null && o2.getPost() == null) {
+                    return 0;
+                } else if (o1.getPost() == null) {
+                    return 1;
+                } else if (o2.getPost() == null) {
+                    return -1;
+                }
                 return o1.getPost().compareTo(o2.getPost());
             }
         });
@@ -498,6 +513,14 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
         users.sort(new Comparator<User>() {
             @Override
             public int compare(User o1, User o2) {
+                if (o1.getBirthday() == null && o2.getBirthday() == null) {
+                    return 0;
+                } else if (o1.getBirthday() == null) {
+                    return 1;
+                } else if (o2.getBirthday() == null) {
+                    return -1;
+                }
+
                 if (o1.getBirthday().getTime() == o2.getBirthday().getTime()) return 0;
                 else if (o1.getBirthday().getTime() > o2.getBirthday().getTime()) return 1;
                 else return -1;
@@ -513,8 +536,8 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
     //sort by first name
     @GetMapping("/sort_fio_reverse")
     public List<User> sortByFIOReverse(@RequestParam(required = false) List<User> list,
-                                @RequestParam(name = "start_index") int startIndex,
-                                @RequestParam(name = "last_index") int lastIndex) {
+                                       @RequestParam(name = "start_index") int startIndex,
+                                       @RequestParam(name = "last_index") int lastIndex) {
         List<User> users = null;
 
         if (list == null) {
@@ -540,8 +563,8 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
     //sort by email
     @GetMapping("/sort_email_reverse")
     public List<User> sortByEmailReverse(@RequestParam(required = false) List<User> list,
-                                  @RequestParam(name = "start_index") int startIndex,
-                                  @RequestParam(name = "last_index") int lastIndex) {
+                                         @RequestParam(name = "start_index") int startIndex,
+                                         @RequestParam(name = "last_index") int lastIndex) {
         List<User> users = null;
 
         if (list == null) {
@@ -563,8 +586,8 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
     //sort by status
     @GetMapping("/sort_status_reverse")
     public List<User> sortByStatusReverse(@RequestParam(required = false) List<User> list,
-                                   @RequestParam(name = "start_index") int startIndex,
-                                   @RequestParam(name = "last_index") int lastIndex) {
+                                          @RequestParam(name = "start_index") int startIndex,
+                                          @RequestParam(name = "last_index") int lastIndex) {
         List<User> users = null;
 
         if (list == null) {
@@ -587,8 +610,8 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
     //sort by division
     @GetMapping("/sort_division_reverse")
     public List<User> sortByDivisionReverse(@RequestParam(required = false) List<User> list,
-                                     @RequestParam(name = "start_index") int startIndex,
-                                     @RequestParam(name = "last_index") int lastIndex) {
+                                            @RequestParam(name = "start_index") int startIndex,
+                                            @RequestParam(name = "last_index") int lastIndex) {
         List<User> users = null;
 
         if (list == null) {
@@ -599,6 +622,14 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
         users.sort(new Comparator<User>() {
             @Override
             public int compare(User o1, User o2) {
+                if (o1.getDivision() == null && o2.getDivision() == null) {
+                    return 0;
+                } else if (o1.getDivision() == null) {
+                    return -1;
+                } else if (o2.getDivision() == null) {
+                    return 1;
+                }
+
                 return o2.getDivision().compareTo(o1.getDivision());
             }
         });
@@ -609,8 +640,8 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
     //sort by post
     @GetMapping("/sort_post_reverse")
     public List<User> sortByPostReverse(@RequestParam(required = false) List<User> list,
-                                 @RequestParam(name = "start_index") int startIndex,
-                                 @RequestParam(name = "last_index") int lastIndex) {
+                                        @RequestParam(name = "start_index") int startIndex,
+                                        @RequestParam(name = "last_index") int lastIndex) {
         List<User> users = null;
 
         if (list == null) {
@@ -622,6 +653,14 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
         users.sort(new Comparator<User>() {
             @Override
             public int compare(User o1, User o2) {
+                if (o1.getPost() == null && o2.getPost() == null) {
+                    return 0;
+                } else if (o1.getPost() == null) {
+                    return -1;
+                } else if (o2.getPost() == null) {
+                    return 1;
+                }
+
                 return o2.getPost().compareTo(o1.getPost());
             }
         });
@@ -632,8 +671,8 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
     //sort by birthday
     @GetMapping("/sort_birthday_reverse")
     public List<User> sortByBirthdayReverse(@RequestParam(required = false) List<User> list,
-                                     @RequestParam(name = "start_index") int startIndex,
-                                     @RequestParam(name = "last_index") int lastIndex) {
+                                            @RequestParam(name = "start_index") int startIndex,
+                                            @RequestParam(name = "last_index") int lastIndex) {
         List<User> users = null;
 
         if (list == null) {
@@ -644,6 +683,14 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
         users.sort(new Comparator<User>() {
             @Override
             public int compare(User o1, User o2) {
+                if (o1.getBirthday() == null && o2.getBirthday() == null) {
+                    return 0;
+                } else if (o1.getBirthday() == null) {
+                    return -1;
+                } else if (o2.getBirthday() == null) {
+                    return 1;
+                }
+
                 if (o1.getBirthday().getTime() == o2.getBirthday().getTime()) return 0;
                 else if (o1.getBirthday().getTime() < o2.getBirthday().getTime()) return 1;
                 else return -1;
@@ -663,7 +710,7 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
         //TODO сделать обработку пустой строки
 
         List<User> users = userService.searchByFirstName(firstName.toLowerCase());
-        if(firstName.length()>1) {
+        if (firstName.length() > 1) {
             users.addAll(userService.searchByFirstName(firstName.substring(0, 1).toUpperCase() + firstName.substring(1).toLowerCase()));
         }
         users.addAll(userService.searchByFirstName(firstName.toUpperCase()));
@@ -677,7 +724,7 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
                                        @RequestParam(name = "start_index") int startIndex,
                                        @RequestParam(name = "last_index") int lastIndex) {
         List<User> users = userService.searchByLastName(lastName.toLowerCase());
-        if(lastName.length()>1) {
+        if (lastName.length() > 1) {
             users.addAll(userService.searchByLastName(lastName.substring(0, 1).toUpperCase() + lastName.substring(1).toLowerCase()));
         }
         users.addAll(userService.searchByLastName(lastName.toUpperCase()));
@@ -690,7 +737,7 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
                                          @RequestParam(name = "start_index") int startIndex,
                                          @RequestParam(name = "last_index") int lastIndex) {
         List<User> users = userService.searchByMiddleName(middleName.toLowerCase());
-        if(middleName.length()>1) {
+        if (middleName.length() > 1) {
             users.addAll(userService.searchByMiddleName(middleName.substring(0, 1).toUpperCase() + middleName.substring(1).toLowerCase()));
         }
         users.addAll(userService.searchByMiddleName(middleName.toUpperCase()));
@@ -703,7 +750,7 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
                                      @RequestParam(name = "start_index") int startIndex,
                                      @RequestParam(name = "last_index") int lastIndex) {
         List<User> users = userService.searchByStatus(status.toLowerCase());
-        if(status.length()>1) {
+        if (status.length() > 1) {
             users.addAll(userService.searchByStatus(status.substring(0, 1).toUpperCase() + status.substring(1).toLowerCase()));
         }
         users.addAll(userService.searchByStatus(status.toUpperCase()));
@@ -716,7 +763,7 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
                                    @RequestParam(name = "start_index") int startIndex,
                                    @RequestParam(name = "last_index") int lastIndex) {
         List<User> users = userService.searchByPost(post.toLowerCase());
-        if(post.length()>1) {
+        if (post.length() > 1) {
             users.addAll(userService.searchByPost(post.substring(0, 1).toUpperCase() + post.substring(1).toLowerCase()));
         }
         users.addAll(userService.searchByPost(post.toUpperCase()));
@@ -729,7 +776,7 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
                                        @RequestParam(name = "start_index") int startIndex,
                                        @RequestParam(name = "last_index") int lastIndex) {
         List<User> users = userService.searchByDivision(division.toLowerCase());
-        if(division.length()>1) {
+        if (division.length() > 1) {
             users.addAll(userService.searchByDivision(division.substring(0, 1).toUpperCase() + division.substring(1).toLowerCase()));
         }
         users.addAll(userService.searchByDivision(division.toUpperCase()));
@@ -742,7 +789,7 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
                                     @RequestParam(name = "start_index") int startIndex,
                                     @RequestParam(name = "last_index") int lastIndex) {
         List<User> users = userService.searchByEmail(email.toLowerCase());
-        if(email.length()>1) {
+        if (email.length() > 1) {
             users.addAll(userService.searchByEmail(email.substring(0, 1).toUpperCase() + email.substring(1).toLowerCase()));
         }
         users.addAll(userService.searchByEmail(email.toUpperCase()));
@@ -752,8 +799,8 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
     //search by birthday
     @GetMapping("/search_birthday")
     public List<User> searchByBirthday(@RequestParam("birthday") String birthday,
-                                    @RequestParam(name = "start_index") int startIndex,
-                                    @RequestParam(name = "last_index") int lastIndex) {
+                                       @RequestParam(name = "start_index") int startIndex,
+                                       @RequestParam(name = "last_index") int lastIndex) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         Date date = new Date();
         try {
@@ -767,13 +814,13 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
     //search by phone number
     @GetMapping("/search_number")
     public List<User> searchByNumber(@RequestParam("number") String number,
-                                    @RequestParam(name = "start_index") int startIndex,
-                                    @RequestParam(name = "last_index") int lastIndex) {
+                                     @RequestParam(name = "start_index") int startIndex,
+                                     @RequestParam(name = "last_index") int lastIndex) {
         List<PhoneNumber> list = phoneNumberService.searchByPhoneNumber(number);
         List<User> users = new ArrayList<>();
 
-        for (PhoneNumber pn:
-             list) {
+        for (PhoneNumber pn :
+                list) {
             users.add(userService.getUserByEmail(pn.getUser().getEmail()).get());
         }
 
@@ -834,7 +881,7 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
 
         }
 
-        switch (sortValue){
+        switch (sortValue) {
             case 1:
                 //sort email
                 return sortByEmail(list, startIndex, lastIndex);
@@ -856,7 +903,6 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
             case 6:
                 //sort birthday
                 return sortByBirthday(list, startIndex, lastIndex);
-
 
 
             case 7:
