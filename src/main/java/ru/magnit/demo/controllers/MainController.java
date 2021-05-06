@@ -900,48 +900,70 @@ public class MainController {
         switch (sortValue) {
             case 1:
                 //sort email
+                if(list==null)
+                    break;
                 return sortByEmail(list, startIndex, lastIndex);
             case 2:
                 //sort division
+                if(list==null)
+                    break;
                 return sortByDivision(list, startIndex, lastIndex);
             case 3:
                 //sort post
+                if(list==null)
+                    break;
                 return sortByPost(list, startIndex, lastIndex);
 
             case 4:
                 //sort status
+                if(list==null)
+                    break;
                 return sortByStatus(list, startIndex, lastIndex);
 
             case 5:
                 // sort fio
-                if(list==null && list.isEmpty())
+                if(list==null)
                     break;
                 return sortByFIO(list, startIndex, lastIndex);
 
             case 6:
                 //sort birthday
+                if(list==null)
+                    break;
                 return sortByBirthday(list, startIndex, lastIndex);
 
             case 7:
                 //sort email reverse
+                if(list==null)
+                    break;
                 return sortByEmailReverse(list, startIndex, lastIndex);
             case 8:
                 //sort division reverse
+                if(list==null)
+                    break;
                 return sortByDivisionReverse(list, startIndex, lastIndex);
             case 9:
                 //sort post reverse
+                if(list==null)
+                    break;
                 return sortByPostReverse(list, startIndex, lastIndex);
 
             case 10:
                 //sort status reverse
+                if(list==null)
+                    break;
                 return sortByStatusReverse(list, startIndex, lastIndex);
 
             case 11:
                 // sort first name reverse
+                if(list==null)
+                    break;
                 return sortByFIOReverse(list, startIndex, lastIndex);
 
             case 12:
                 //sort birthday reverse
+                if(list==null)
+                    break;
                 return sortByBirthdayReverse(list, startIndex, lastIndex);
         }
 
