@@ -74,7 +74,7 @@ public class AuthPageController {
 
         String redirectUrl = "https://magnit-server.herokuapp.com/msal4jsample/";
         response.sendRedirect(endSessionEndpoint + "?post_logout_redirect_uri=" +
-                URLEncoder.encode(START_PAGE, "UTF-8"));
+                URLEncoder.encode(redirectUrl, "UTF-8"));
     }
 
 
