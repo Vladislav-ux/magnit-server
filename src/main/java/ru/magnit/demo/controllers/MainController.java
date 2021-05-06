@@ -26,6 +26,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -332,9 +333,16 @@ public Response executeSampleService(@RequestPart("file") MultipartFile excelfil
     //Modifying birthday
     @PostMapping("/change_birthday")
     public Response changeBirthday(@RequestHeader("Authorization") String email,
-                                     @RequestParam(name = "birthday") Date birthday) {
+                                     @RequestParam(name = "birthday") String birthday) {
 
-        return userService.changeBirthday(email, birthday);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date date = formatter.parse("2001-10-28");
+            return userService.changeBirthday(email, date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return new Response(ResponseStatus.ERROR, "date was not added");
     }
 
     //Modifying post

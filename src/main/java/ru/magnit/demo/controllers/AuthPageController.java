@@ -189,6 +189,7 @@ public class AuthPageController {
     private JSONObject getUser(String accessToken) throws Exception{
         JSONObject firstObject = new JSONObject(getUserInfo(accessToken));
         JSONObject secondObject = new JSONObject(getUserRole(accessToken));
+//        JSONObject thirdObject = new JSONObject(getUserBirthday(accessToken));
         //...
 
         String role = "";
@@ -268,31 +269,16 @@ public class AuthPageController {
         return response;
     }
 
-    private String getUserPhoto(String accessToken) throws Exception {
+    private String getUserBirthday(String accessToken) throws Exception {
         // Microsoft Graph user endpoint
         System.out.println("access Token = " + accessToken);
-        URL url = new URL(authHelper.getMsGraphEndpointHost() + "v1.0/me/checkMemberObjects");
+        URL url = new URL(authHelper.getMsGraphEndpointHost() + "beta/me/profile?expand=anniversaries");
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
         // Set the appropriate header fields in the request header.
         conn.setRequestProperty("Authorization", "Bearer " + accessToken);
         conn.setRequestProperty("Accept", "application/json");
-        conn.setRequestProperty("Content-type", "application/json");
-        conn.setDoOutput(true);
-        conn.setRequestMethod("POST");
-
-        JSONObject object = new JSONObject();
-        String[] mass = new String[3];
-        mass[0] = "9c4f6fd3-0a58-491b-8af1-d0683d09edab";//users
-        mass[1] = "861afe35-712d-456b-9642-cb853d236fe1";//admins
-        mass[2] = "0abd53ed-f139-42df-8f2d-98eec18c280c";//moderators
-
-        object.put("ids", mass);
-
-        try(OutputStream os = conn.getOutputStream()) {
-            byte[] input = object.toString().getBytes("utf-8");
-            os.write(input, 0, input.length);
-        }
+        conn.setRequestMethod("GET");
 
         String response = HttpClientHelper.getResponseStringFromConn(conn);
 
