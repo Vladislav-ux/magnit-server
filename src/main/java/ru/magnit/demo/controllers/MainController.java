@@ -718,12 +718,18 @@ public class MainController {
                                         @RequestParam(name = "start_index") int startIndex,
                                         @RequestParam(name = "last_index") int lastIndex) {
         //TODO сделать обработку пустой строки
-
-        List<User> users = userService.searchByFirstName(firstName.toLowerCase());
+        String firstNameLowCase = firstName.toLowerCase();
+        List<User> users = userService.searchByFirstName(firstNameLowCase);
         if (firstName.length() > 1) {
-            users.addAll(userService.searchByFirstName(firstName.substring(0, 1).toUpperCase() + firstName.substring(1).toLowerCase()));
+            String firstNameUpLowCase = firstName.substring(0, 1).toUpperCase() + firstName.substring(1).toLowerCase();
+            if(!firstNameUpLowCase.equals(firstNameLowCase)) {
+                users.addAll(userService.searchByFirstName(firstNameUpLowCase));
+            }
         }
-        users.addAll(userService.searchByFirstName(firstName.toUpperCase()));
+        String firstNameUpCase = firstName.toUpperCase();
+        if(!firstNameUpCase.equals(firstNameLowCase)) {
+            users.addAll(userService.searchByFirstName(firstNameUpCase));
+        }
         return getLimitList(users, startIndex, lastIndex);
     }
 
