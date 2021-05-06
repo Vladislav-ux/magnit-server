@@ -24,6 +24,7 @@ public interface PhoneNumberRepository extends CrudRepository<PhoneNumber, Strin
     @Query("select p from PhoneNumber p where p.user.email = :email AND p.number = :phone")
     PhoneNumber findPhoneNumberByNumberAndEmail(@Param("email") String email, @Param("phone") String phone);
 
-    @Query("select pn from PhoneNumber pn where pn.number = :number")
+    //    @Query("select pn from PhoneNumber pn where pn.number = :number")
+    @Query("select pn from PhoneNumber pn where pn.number LIKE CONCAT('%',:number,'%')")
     Iterable<PhoneNumber> findByPhoneNumber(@Param("number") String number);
 }

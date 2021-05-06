@@ -50,7 +50,7 @@ public class AuthFilter implements Filter {
                         authHelper.processAuthenticationCodeRedirect(httpRequest, currentUri, fullUrl);
 
                         // remove query params so that containsAuthenticationCode will not be true on future requests
-                        ((HttpServletResponse) response).sendRedirect("http://localhost:8080/continue");
+                        ((HttpServletResponse) response).sendRedirect(currentUri);
 
                         chain.doFilter(request, response);
                         return;

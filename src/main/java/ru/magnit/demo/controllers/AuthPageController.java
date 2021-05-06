@@ -77,8 +77,8 @@ public class AuthPageController {
 
 
     @GetMapping("/msal4jsample/secure/aad")
-    public /*ModelAndView*/ void securePage(HttpServletRequest httpRequest, HttpServletResponse httpServletResponse) throws ParseException {
-//        return new ModelAndView("redirect:" + CONTINUE_PAGE);
+    public ModelAndView securePage(HttpServletRequest httpRequest, HttpServletResponse httpServletResponse) {
+        return new ModelAndView("redirect:" + CONTINUE_PAGE);
     }
 
     @GetMapping("/msal4jsample/graph/me")
