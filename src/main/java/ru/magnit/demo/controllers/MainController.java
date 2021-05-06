@@ -718,17 +718,17 @@ public class MainController {
                                         @RequestParam(name = "start_index") int startIndex,
                                         @RequestParam(name = "last_index") int lastIndex) {
         //TODO сделать обработку пустой строки
-        String firstNameLowCase = firstName.toLowerCase();
-        List<User> users = userService.searchByFirstName(firstNameLowCase);
+        String lowCase = firstName.toLowerCase();
+        List<User> users = userService.searchByFirstName(lowCase);
         if (firstName.length() > 1) {
-            String firstNameUpLowCase = firstName.substring(0, 1).toUpperCase() + firstName.substring(1).toLowerCase();
-            if(!firstNameUpLowCase.equals(firstNameLowCase)) {
-                users.addAll(userService.searchByFirstName(firstNameUpLowCase));
+            String upLowCase = firstName.substring(0, 1).toUpperCase() + firstName.substring(1).toLowerCase();
+            if(!upLowCase.equals(lowCase)) {
+                users.addAll(userService.searchByFirstName(upLowCase));
             }
         }
-        String firstNameUpCase = firstName.toUpperCase();
-        if(!firstNameUpCase.equals(firstNameLowCase)) {
-            users.addAll(userService.searchByFirstName(firstNameUpCase));
+        String upCase = firstName.toUpperCase();
+        if(!upCase.equals(lowCase)) {
+            users.addAll(userService.searchByFirstName(upCase));
         }
         return getLimitList(users, startIndex, lastIndex);
     }
@@ -739,11 +739,19 @@ public class MainController {
     public List<User> searchByLastName(@RequestParam("last_name") String lastName,
                                        @RequestParam(name = "start_index") int startIndex,
                                        @RequestParam(name = "last_index") int lastIndex) {
+//        List<User> users = userService.searchByLastName(lastName.toLowerCase());
+        String lowCase = lastName.toLowerCase();
         List<User> users = userService.searchByLastName(lastName.toLowerCase());
         if (lastName.length() > 1) {
-            users.addAll(userService.searchByLastName(lastName.substring(0, 1).toUpperCase() + lastName.substring(1).toLowerCase()));
+            String upLowCase = lastName.substring(0, 1).toUpperCase() + lastName.substring(1).toLowerCase();
+            if(!upLowCase.equals(lowCase)) {
+                users.addAll(userService.searchByLastName(upLowCase));
+            }
         }
-        users.addAll(userService.searchByLastName(lastName.toUpperCase()));
+        String upCase = lastName.toUpperCase();
+        if(!upCase.equals(lowCase)) {
+            users.addAll(userService.searchByLastName(upCase));
+        }
         return getLimitList(users, startIndex, lastIndex);
     }
 
@@ -752,11 +760,18 @@ public class MainController {
     public List<User> searchByMiddleName(@RequestParam("middle_name") String middleName,
                                          @RequestParam(name = "start_index") int startIndex,
                                          @RequestParam(name = "last_index") int lastIndex) {
+        String lowCase = middleName.toLowerCase();
         List<User> users = userService.searchByMiddleName(middleName.toLowerCase());
         if (middleName.length() > 1) {
-            users.addAll(userService.searchByMiddleName(middleName.substring(0, 1).toUpperCase() + middleName.substring(1).toLowerCase()));
+            String upLowCase = middleName.substring(0, 1).toUpperCase() + middleName.substring(1).toLowerCase();
+            if(!upLowCase.equals(lowCase)) {
+                users.addAll(userService.searchByMiddleName(upLowCase));
+            }
         }
-        users.addAll(userService.searchByMiddleName(middleName.toUpperCase()));
+        String upCase = middleName.toUpperCase();
+        if(!upCase.equals(lowCase)) {
+            users.addAll(userService.searchByMiddleName((upCase)));
+        }
         return getLimitList(users, startIndex, lastIndex);
     }
 
@@ -765,11 +780,18 @@ public class MainController {
     public List<User> searchByStatus(@RequestParam("status") String status,
                                      @RequestParam(name = "start_index") int startIndex,
                                      @RequestParam(name = "last_index") int lastIndex) {
+        String lowCase = status.toLowerCase();
         List<User> users = userService.searchByStatus(status.toLowerCase());
         if (status.length() > 1) {
-            users.addAll(userService.searchByStatus(status.substring(0, 1).toUpperCase() + status.substring(1).toLowerCase()));
+            String upLowCase = status.substring(0, 1).toUpperCase() + status.substring(1).toLowerCase();
+            if(!upLowCase.equals(lowCase)) {
+                users.addAll(userService.searchByStatus(upLowCase));
+            }
         }
-        users.addAll(userService.searchByStatus(status.toUpperCase()));
+        String upCase = status.toUpperCase();
+        if(!upCase.equals(lowCase)) {
+            users.addAll(userService.searchByStatus(upCase));
+        }
         return getLimitList(users, startIndex, lastIndex);
     }
 
@@ -778,11 +800,18 @@ public class MainController {
     public List<User> searchByPost(@RequestParam("post") String post,
                                    @RequestParam(name = "start_index") int startIndex,
                                    @RequestParam(name = "last_index") int lastIndex) {
+        String lowCase = post.toLowerCase();
         List<User> users = userService.searchByPost(post.toLowerCase());
         if (post.length() > 1) {
-            users.addAll(userService.searchByPost(post.substring(0, 1).toUpperCase() + post.substring(1).toLowerCase()));
+            String upLowCase = post.substring(0, 1).toUpperCase() + post.substring(1).toLowerCase();
+            if(!upLowCase.equals(lowCase)) {
+                users.addAll(userService.searchByPost(upLowCase));
+            }
         }
-        users.addAll(userService.searchByPost(post.toUpperCase()));
+        String upCase = post.toUpperCase();
+        if(!upCase.equals(lowCase)) {
+            users.addAll(userService.searchByPost(upCase));
+        }
         return getLimitList(users, startIndex, lastIndex);
     }
 
@@ -791,11 +820,18 @@ public class MainController {
     public List<User> searchByDivision(@RequestParam("division") String division,
                                        @RequestParam(name = "start_index") int startIndex,
                                        @RequestParam(name = "last_index") int lastIndex) {
+        String lowCase = division.toLowerCase();
         List<User> users = userService.searchByDivision(division.toLowerCase());
         if (division.length() > 1) {
-            users.addAll(userService.searchByDivision(division.substring(0, 1).toUpperCase() + division.substring(1).toLowerCase()));
+            String upLowCase = division.substring(0, 1).toUpperCase() + division.substring(1).toLowerCase();
+            if(!upLowCase.equals(lowCase)) {
+                users.addAll(userService.searchByDivision(upLowCase));
+            }
         }
-        users.addAll(userService.searchByDivision(division.toUpperCase()));
+        String upCase = division.toUpperCase();
+        if(!upCase.equals(lowCase)) {
+            users.addAll(userService.searchByDivision(upCase));
+        }
         return getLimitList(users, startIndex, lastIndex);
     }
 
@@ -804,11 +840,18 @@ public class MainController {
     public List<User> searchByEmail(@RequestParam("email") String email,
                                     @RequestParam(name = "start_index") int startIndex,
                                     @RequestParam(name = "last_index") int lastIndex) {
+        String lowCase = email.toLowerCase();
         List<User> users = userService.searchByEmail(email.toLowerCase());
         if (email.length() > 1) {
-            users.addAll(userService.searchByEmail(email.substring(0, 1).toUpperCase() + email.substring(1).toLowerCase()));
+            String upLowCase = email.substring(0, 1).toUpperCase() + email.substring(1).toLowerCase();
+            if(!upLowCase.equals(lowCase)) {
+                users.addAll(userService.searchByEmail(upLowCase));
+            }
         }
-        users.addAll(userService.searchByEmail(email.toUpperCase()));
+        String upCase = email.toUpperCase();
+        if(!upCase.equals(lowCase)) {
+            users.addAll(userService.searchByEmail((upCase)));
+        }
         return getLimitList(users, startIndex, lastIndex);
     }
 
